@@ -6,7 +6,7 @@ use App\Http\Controllers\Api\TaskController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\ExamController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -41,3 +41,12 @@ Route::get('/dashboard/get_overdue_tasks',[DashboardController::class,'get_overd
 Route::apiResources([
     'tasks' => TaskController::class
 ]);
+//exam
+// Xem chi tiết Exam
+Route::get('/exams/{id}', [ExamController::class, 'show']);
+//theem
+Route::post('/exams', [ExamController::class, 'store']);
+// Cập nhật Exam
+Route::put('/exams/{id}', [ExamController::class, 'update']);
+// Xóa Exam
+Route::delete('/exams/{id}', [ExamController::class, 'destroy']);

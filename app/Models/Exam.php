@@ -5,12 +5,22 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Exam extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'course_id',
+        'name',
+        'start_date',
+        'start_time',
+        'duration',
+        'room',
+    ];
+
+
 
     public function course(): BelongsTo
     {
