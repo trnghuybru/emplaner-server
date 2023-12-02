@@ -3,16 +3,52 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Resources\ExamResource;
 use App\Models\Exam;
-use App\Models\Course;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
 class ExamController extends Controller
 {
-    public function index()
+
+    public function index(Request $request)
     {
-        $exams = Exam::all();
-        return response()->json($exams, 200);
+        $id = $request->user()->id;
+        $exams = Exam::where('user_id', $id)->get();
+
+        return response()->json([
+            'status' => 200,
+            'data' => ExamResource::collection($exams),
+        ]);
     }
+
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'course_id' => 'integer|required|exists:courses,id',
+            'name' => 'required|string|max:255',
+            'start_date' => 'required|date',
+            'start_time' => 'required|string',
+            'duration' => 'required|integer',
+            'room' => 'required|string',
+        ]);
+
+        $exam = Exam::create([
+            'course_id' => $request->course_id,
+            'name' => $request->name,
+            'start_date' => $request->start_date,
+            'start_time' => $request->start_time,
+            'duration' => $request->duration,
+            'room' => $request->room,
+        ]);
+
+        return response()->json([
+            'status' => 201,
+            'data' => new ExamResource($exam),
+        ]);
+    }
+
 
     public function show($id)
     {
@@ -22,60 +58,58 @@ class ExamController extends Controller
             return response()->json(['message' => 'Exam not found'], 404);
         }
 
-        return response()->json($exam, 200);
+        // Kiểm tra xem người dùng có quyền xem exam không
+        if ($exam->user_id !== auth()->id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        return response()->json([
+            'status' => 200,
+            'data' => new ExamResource($exam),
+        ]);
     }
 
-    public function store(Request $request)
-{
-    $request->validate([
-        'course_id' => 'required|integer|exists:courses,id',
-        'name' => 'required|string',
-        'start_date' => 'required|date',
-        'start_time' => 'required|string',
-        'duration' => 'required|integer',
-        'room' => 'required|string',
-    ]);
+    
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'course_id' => 'integer|exists:courses,id',
+            'name' => 'string|max:255',
+            'start_date' => 'date',
+            'start_time' => 'string',
+            'duration' => 'integer',
+            'room' => 'string',
+        ]);
 
-    $exam = new Exam();
-    $exam->course_id = $request->input('course_id');
-    $exam->name = $request->input('name');
-    $exam->start_date = $request->input('start_date');
-    $exam->start_time = $request->input('start_time');
-    $exam->duration = $request->input('duration');
-    $exam->room = $request->input('room');
+        $exam = Exam::findOrFail($id);
 
-    $exam->save();
+        // Kiểm tra xem người dùng có quyền sửa exam không
+        if ($exam->user_id !== auth()->id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
 
-    return response()->json($exam, 201);
+        $exam->update($request->all());
+
+        return response()->json([
+            'status' => 200,
+            'data' => new ExamResource($exam),
+        ]);
+    }
+
+
+    public function destroy($id)
+    {
+        $exam = Exam::findOrFail($id);
+
+        // Kiểm tra xem người dùng có quyền xóa exam không
+        if ($exam->user_id !== auth()->id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $exam->delete();
+
+        return response()->json([
+            'status' => 204,
+        ]);
+    }
 }
-
-
-public function update(Request $request, $id)
-{
-    $request->validate([
-        'course_id' => 'required|integer',
-        'name' => 'required|string',
-        'start_date' => 'required|date',
-        'start_time' => 'required|string',
-        'duration' => 'required|integer',
-        'room' => 'required|string',
-    ]);
-
-    $exam = Exam::findOrFail($id);
-    $exam->update($request->all());
-
-    return response()->json($exam, 200);
-}
-
-
-public function destroy($id)
-{
-    $exam = Exam::findOrFail($id);
-    $exam->delete();
-
-    return response()->json(null, 204);
-}
-}
-
-
-
