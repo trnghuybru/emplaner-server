@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -16,7 +16,11 @@ class ExamController extends Controller
 
     public function show($id)
     {
-        $exam = Exam::with('course')->findOrFail($id);
+        $exam = Exam::find($id);
+
+        if (!$exam) {
+            return response()->json(['message' => 'Exam not found'], 404);
+        }
 
         return response()->json($exam, 200);
     }
@@ -72,5 +76,6 @@ public function destroy($id)
     return response()->json(null, 204);
 }
 }
+
 
 
