@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\ScheduleController;
 use App\Http\Controllers\Api\TaskController;
+use App\Models\Schedule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -41,3 +43,5 @@ Route::get('/dashboard/get_overdue_tasks',[DashboardController::class,'get_overd
 Route::apiResources([
     'tasks' => TaskController::class
 ]);
+
+Route::get('/schedules/get_class_list',[ScheduleController::class,'get_class_list']);

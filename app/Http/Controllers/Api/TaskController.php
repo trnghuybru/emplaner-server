@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\TaskResource;
 use App\Http\Resources\TaskViewResource;
 use App\Http\Traits\CanLoadRelationships;
+use App\Models\Exam;
 use App\Models\Task;
 use App\Models\TypeTask;
 use App\Models\User;
@@ -13,12 +14,15 @@ use Egulias\EmailValidator\Parser\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
+use function Laravel\Prompts\select;
+
 class TaskController extends Controller
 {
     use CanLoadRelationships;
     /**
      * Display a listing of the resource.
      */
+    
     private $relations = ['type_task'];
     public function __construct()
     {
@@ -100,9 +104,47 @@ class TaskController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Task $task)
     {
-        //
+        $userId = DB::table('tasks_view')
+        ->select('user_id')
+        ->where('id', '=', $task->id)
+        ->first()
+        ->user_id;
+
+        if($userId === auth()->id())
+        {
+            $taskDetail = DB::table('tasks_view')->select([
+                'id',
+                'name',
+                'description',
+                'end_date',
+                'type',
+                'exam_id',
+                'course_id',
+                'course_name'
+            ])->where('id','=',$task->id)
+            ->first();
+            if ($taskDetail->exam_id != null){
+                $exam = Exam::find($taskDetail->exam_id);
+
+                $taskDetail->exam_id = $exam->id;
+
+                $taskDetail->exam_name = $exam->name;
+            }
+
+            return response()->json([
+                'status' => 200,
+                'data' => $taskDetail
+            ]);
+
+        }
+        else {
+            return response()->json([
+                'status' => 403,
+                'message' => 'Unauthorized'
+            ],403);
+        }
     }
 
 
@@ -118,8 +160,27 @@ class TaskController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Task $task)
     {
-        
+        $userId = DB::table('tasks_view')
+        ->select('user_id')
+        ->where('id', '=', $task->id)
+        ->first()
+        ->user_id;
+
+        if($userId === auth()->id()){
+            TypeTask::where('task_id', $task->id)->delete();
+            $task->delete();
+            
+            return response()->json([
+                'status' => 201,
+                'message' => "Delete successfully"
+            ],201);
+        } else {
+            return response()->json([
+                'status' => 403,
+                'message' => 'Unauthorized'
+            ],403);
+        }
     }
 }
