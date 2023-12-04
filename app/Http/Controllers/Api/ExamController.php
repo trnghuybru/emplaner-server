@@ -22,7 +22,6 @@ class ExamController extends Controller
         ]);
     }
 
-
     public function store(Request $request)
     {
         $request->validate([
@@ -48,7 +47,6 @@ class ExamController extends Controller
             'data' => new ExamResource($exam),
         ]);
     }
-
 
     public function show($id)
     {
