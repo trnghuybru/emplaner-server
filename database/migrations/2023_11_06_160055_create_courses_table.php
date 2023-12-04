@@ -16,6 +16,9 @@ return new class extends Migration
             $table->unsignedBigInteger('semester_id');
             $table->string('name');
             $table->string('color_code')->nullable();
+            $table->string('teacher');
+            $table->date('start_date');
+            $table->date('end_date');
             $table->timestamps();
             $table->foreign('semester_id')->references('id')->on('semesters');
         });

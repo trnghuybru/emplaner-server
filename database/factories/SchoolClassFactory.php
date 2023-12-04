@@ -16,12 +16,11 @@ class SchoolClassFactory extends Factory
      */
     public function definition(): array
     {
-        $start_date = fake()->dateTimeBetween('2023-01-04', '2023-05-21')->format('Y-m-d');
+        
         return [
-            'teacher' => fake()->name(),
+            
             'room' => strval(random_int(1, 200)),
-            'start_date' => $start_date,
-            'end_date' => fake()->dateTimeBetween($start_date,$start_date.'+60 days')->format('Y-m-d')
+            
         ];
     }
 }

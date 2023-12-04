@@ -15,15 +15,16 @@ class SchoolClassResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'class_id' => $this->class_id,
+            'id' => $this->class_id,
             'teacher' => $this->teacher,
-            "room" => $this->room,
+            'room' => $this->room,
             "start_date" => $this->start_date,
             "end_date" => $this->end_date,
             "day_of_week" => $this->day_of_week,
             "start_time" => $this->start_time,
             "end_time" => $this->end_time,
             "course_name" => $this->course_name
+
         ];
     }
 }

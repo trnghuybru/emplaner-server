@@ -14,10 +14,7 @@ return new class extends Migration
         Schema::create('school_classes', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('course_id');
-            $table->string('teacher');
             $table->string('room');
-            $table->date('start_date');
-            $table->date('end_date');
             $table->timestamps();
             $table->foreign('course_id')->references('id')->on('courses');
         });

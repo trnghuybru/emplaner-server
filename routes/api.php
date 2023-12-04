@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\ScheduleController;
 use App\Http\Controllers\Api\TaskController;
+use App\Models\Schedule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -41,6 +43,10 @@ Route::get('/dashboard/get_overdue_tasks',[DashboardController::class,'get_overd
 Route::apiResources([
     'tasks' => TaskController::class
 ]);
+<<<<<<< HEAD
+
+Route::get('/schedules/get_class_list',[ScheduleController::class,'get_class_list']);
+=======
 //exam
 // Xem chi tiết Exam
 Route::get('/exams/{id}', [ExamController::class, 'show']);
@@ -50,3 +56,4 @@ Route::post('/exams', [ExamController::class, 'store']);
 Route::put('/exams/{id}', [ExamController::class, 'update']);
 // Xóa Exam
 Route::delete('/exams/{id}', [ExamController::class, 'destroy']);
+>>>>>>> ad2c723a0fc4f3f518fdfb775647789e0895e016
