@@ -69,7 +69,7 @@ class ExamController extends Controller
         ]);
     }
 
-    
+
     public function update(Request $request, $id)
     {
         $request->validate([
