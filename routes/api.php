@@ -43,17 +43,19 @@ Route::get('/dashboard/get_overdue_tasks',[DashboardController::class,'get_overd
 Route::apiResources([
     'tasks' => TaskController::class
 ]);
-<<<<<<< HEAD
 
 Route::get('/schedules/get_class_list',[ScheduleController::class,'get_class_list']);
-=======
+
+Route::middleware('auth:sanctum')->group(function () {
+
 //exam
+Route::get('/exams', [ExamController::class, 'index']);
 // Xem chi tiết Exam
-Route::get('/exams/{id}', [ExamController::class, 'show']);
+Route::get('/exams/{exam}', [ExamController::class, 'show']);
 //theem
 Route::post('/exams', [ExamController::class, 'store']);
 // Cập nhật Exam
-Route::put('/exams/{id}', [ExamController::class, 'update']);
+Route::put('/exams/{exam}', [ExamController::class, 'update']);
 // Xóa Exam
-Route::delete('/exams/{id}', [ExamController::class, 'destroy']);
->>>>>>> ad2c723a0fc4f3f518fdfb775647789e0895e016
+Route::delete('/exams/{exam}', [ExamController::class, 'destroy']);
+});

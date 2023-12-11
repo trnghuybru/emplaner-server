@@ -22,7 +22,7 @@ class TaskController extends Controller
     /**
      * Display a listing of the resource.
      */
-    
+
     private $relations = ['type_task'];
     public function __construct()
     {
@@ -70,7 +70,7 @@ class TaskController extends Controller
         ->where('course_id', '=', $courseId)
         ->first()
         ->user_id;
-    
+
 
         if ($userId === auth()->id()) {
             $task = Task::create([
@@ -98,7 +98,7 @@ class TaskController extends Controller
             ],403);
         }
 
-        
+
     }
 
     /**
@@ -171,7 +171,7 @@ class TaskController extends Controller
         if($userId === auth()->id()){
             TypeTask::where('task_id', $task->id)->delete();
             $task->delete();
-            
+
             return response()->json([
                 'status' => 201,
                 'message' => "Delete successfully"
