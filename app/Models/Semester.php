@@ -11,6 +11,12 @@ class Semester extends Model
 {
     use HasFactory;
     
+    protected $fillable =[
+        'school_year_id',
+        'name',
+        'start_date',
+        'end_date'
+    ];
     public function school_year(): BelongsTo
     {
         return $this->belongsTo(SchoolYear::class);

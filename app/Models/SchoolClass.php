@@ -11,6 +11,11 @@ class SchoolClass extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'course_id',
+        'room',
+        'date'
+    ];
     public function schedules(): HasMany
     {
         return $this->hasMany(Schedule::class);

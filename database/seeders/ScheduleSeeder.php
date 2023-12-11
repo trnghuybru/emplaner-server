@@ -15,7 +15,7 @@ class ScheduleSeeder extends Seeder
         $schoolclasses = \App\Models\SchoolClass::all();
         foreach ($schoolclasses as $schoolclass) {
             \App\Models\Schedule::factory()->create([
-                "class_id"=> $schoolclass->id,
+                "school_class_id"=> $schoolclass->id,
             ]);
         }
     }

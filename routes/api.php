@@ -43,10 +43,16 @@ Route::get('/dashboard/get_overdue_tasks',[DashboardController::class,'get_overd
 Route::apiResources([
     'tasks' => TaskController::class
 ]);
-<<<<<<< HEAD
+
+Route::post('/schedules/store_class',[ScheduleController::class,'store_class']);
 
 Route::get('/schedules/get_class_list',[ScheduleController::class,'get_class_list']);
-=======
+
+Route::post('schedules/store_course',[ScheduleController::class,'store_course']);
+
+Route::post('schedules/store_semester',[ScheduleController::class,'store_semester']);
+
+Route::delete('schedules/destroy_course/{id}',[ScheduleController::class,'destroy_course']);
 //exam
 // Xem chi tiết Exam
 Route::get('/exams/{id}', [ExamController::class, 'show']);
@@ -56,4 +62,3 @@ Route::post('/exams', [ExamController::class, 'store']);
 Route::put('/exams/{id}', [ExamController::class, 'update']);
 // Xóa Exam
 Route::delete('/exams/{id}', [ExamController::class, 'destroy']);
->>>>>>> ad2c723a0fc4f3f518fdfb775647789e0895e016

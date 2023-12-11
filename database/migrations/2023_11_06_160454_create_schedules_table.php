@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('schedules', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('class_id');
+            $table->unsignedBigInteger('school_class_id');
             $table->string('day_of_week');
             $table->time('start_time');
             $table->time('end_time');
             $table->timestamps();
-            $table->foreign('class_id')->references('id')->on('school_classes');
+            $table->foreign('school_class_id')->references('id')->on('school_classes');
         });
     }
 
