@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ExamController;
+use App\Http\Controllers\Api\CalendarController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -48,17 +50,20 @@ Route::post('/schedules/store_class',[ScheduleController::class,'store_class']);
 
 Route::get('/schedules/get_class_list',[ScheduleController::class,'get_class_list']);
 
+Route::get('/schedules/get_course_detail/{id}',[ScheduleController::class,'get_course_detail']);
+
 Route::post('schedules/store_course',[ScheduleController::class,'store_course']);
 
 Route::post('schedules/store_semester',[ScheduleController::class,'store_semester']);
 
 Route::delete('schedules/destroy_course/{id}',[ScheduleController::class,'destroy_course']);
-//exam
-// Xem chi tiết Exam
+
 Route::get('/exams/{id}', [ExamController::class, 'show']);
-//theem
+
 Route::post('/exams', [ExamController::class, 'store']);
-// Cập nhật Exam
+
 Route::put('/exams/{id}', [ExamController::class, 'update']);
-// Xóa Exam
+
 Route::delete('/exams/{id}', [ExamController::class, 'destroy']);
+
+Route::get('/calendars/get_detail_class/{id}',[CalendarController::class,'get_detail_class']);

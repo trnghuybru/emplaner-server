@@ -14,12 +14,11 @@ class SchoolClass extends Model
     protected $fillable = [
         'course_id',
         'room',
-        'date'
+        'date',
+        'start_time',
+        'end_time',
+        'day_of_week'
     ];
-    public function schedules(): HasMany
-    {
-        return $this->hasMany(Schedule::class);
-    }
 
     public function course(): BelongsTo
     {

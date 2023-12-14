@@ -16,6 +16,9 @@ return new class extends Migration
             $table->unsignedBigInteger('course_id');
             $table->string('room');
             $table->date('date')->nullable();
+            $table->string('day_of_week')->nullable();
+            $table->time('start_time');
+            $table->time('end_time');
             $table->timestamps();
             $table->foreign('course_id')->references('id')->on('courses');
         });

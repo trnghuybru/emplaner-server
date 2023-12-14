@@ -78,60 +78,8 @@ class DashboardController extends Controller
      */
     public function get_classes_exams(Request $request)
     {
-        $id = $request->user()->id;
-        $today = now()->toDateString();
-
-        $currentDayOfWeek = now()->format('l');
-
-        $tomorrow = Carbon::tomorrow()->toDateString();
-        $tomorrowDay = Carbon::tomorrow()->format('l');
-
-        // $classes_schedule = SchoolClass::join('schedules', 'school_classes.id', '=', 'schedules.class_id')
-        //     ->join('courses', 'school_classes.course_id', '=', 'courses.id')
-        //     ->join('semesters', 'courses.semester_id', '=', 'semesters.id')
-        //     ->join('school_years', 'semesters.school_year_id', '=', 'school_years.id')
-        //     ->join('users', 'school_years.user_id', '=', 'users.id')
-        //     ->where('schedules.day_of_week', '=', $currentDayOfWeek)
-        //     ->where('school_classes.start_date', '<=', $today)
-        //     ->where(function ($query) use ($today) {
-        //         $query->where('school_classes.end_date', '>=', $today)
-        //             ->orWhereNull('school_classes.end_date');
-        //     })
-        //     ->whereRaw("date_add(school_classes.start_date, interval dayofweek(school_classes.start_date) - 1 day) BETWEEN school_classes.start_date AND school_classes.end_date")
-        //     ->where('users.id', '=', $id) 
-        //     ->select('school_classes.id as class_id', 'school_classes.teacher', 'school_classes.start_date', 'school_classes.end_date', 'schedules.day_of_week', 'schedules.start_time', 'schedules.end_time', 'courses.name as course_name')
-        //     ->get();
-
-        $classes_schedule = DB::select('CALL GetClassesSchedule(?, ?, ?)', [
-            $today,
-            $currentDayOfWeek,
-            $id
-        ]);
-
-        // $exams = Exam::join('courses', 'exams.course_id', '=', 'courses.id')
-        //     ->join('semesters', 'courses.semester_id', '=', 'semesters.id')
-        //     ->join('school_years', 'semesters.school_year_id', '=', 'school_years.id')
-        //     ->join('users', 'school_years.user_id', '=', 'users.id')
-        //     ->where('exams.start_date', '=', $today)
-        //     ->select('exams.id', 'exams.name', 'exams.start_date', 'exams.start_time', 'exams.duration', 'exams.room', 'courses.name as course_name')
-        //     ->get();
-
-        $exams = DB::select('CALL GetTodayExams(?,?)', [
-            $id,
-            $today
-        ]);
         
-        $classes_schedule_tomorrow = DB::select('CALL GetClassesSchedule(?, ?, ?)', [
-            $tomorrow,
-            $tomorrowDay,
-            $id
-        ]);
-        
-        $exams_tomorrow = DB::select('CALL GetTodayExams(?,?)', [
-            $id,
-            $tomorrow
-        ]);
-
+// truyền data vào phần data
         return response()->json(
             [
                 "status" => 200,
@@ -139,21 +87,21 @@ class DashboardController extends Controller
                     "today" => [
                         "classes" => [
                             "type" => "class",
-                            "data" => SchoolClassResource::collection($classes_schedule)
+                            "data" => ""
                         ],
                         "exams" => [
                             "type" => "exam",
-                            "data" => ExamResource::collection($exams)
+                            "data" => "" 
                         ]
                     ],
                     "tomorrow" => [
                         "classes" => [
                             "type" => "class",
-                            "data" => SchoolClassResource::collection($classes_schedule_tomorrow)
+                            "data" => ""
                         ],
                         "exams" => [
                             "type" => "exam",
-                            "data" => ExamResource::collection($exams_tomorrow)
+                            "data" => ""
                         ]
                     ]
                 ]
@@ -163,6 +111,7 @@ class DashboardController extends Controller
     }
 
     public function get_due_tasks(Request $request){
+
         $id = $request->user()->id;
         $today = now()->toDateString();
         

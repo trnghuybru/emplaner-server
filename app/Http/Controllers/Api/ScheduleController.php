@@ -3,20 +3,20 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ClassViewResource;
-use App\Http\Resources\SchoolClassResource;
+use App\Http\Resources\CourseResource;
+use App\Http\Traits\ProcessDataDateType;
 use App\Models\Course;
-use App\Models\Exam;
-use App\Models\Schedule;
 use App\Models\SchoolClass;
 use App\Models\SchoolYear;
 use App\Models\Semester;
+use DateTime;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 
 class ScheduleController extends Controller
 {
-    
+    use ProcessDataDateType;
     /**
      * Display a listing of the resource.
      */
@@ -67,32 +67,40 @@ class ScheduleController extends Controller
         $request->validate([
             'course_id' => 'required|integer',
             'room' => 'string|required',
-            'teacher' => 'string|required',
             'start_time' => 'date_format:H:i|required',
             'end_time' => 'date_format:H:i|required',
-            'day_of_week' => 'string|nullable'
+            'day_of_week' => 'string|required'
         ]);
 
+        $startDate = Course::findOrFail($request->course_id)->start_date;
+        $endDate = Course::findOrFail($request->course_id)->end_date;
+        $day_of_week = $request->day_of_week;
 
-        $class = SchoolClass::create([
-            'course_id' => $request->course_id,
-            'room' => $request->room
-        ]);
-        $dayOfWeekArray = explode(',', $request->day_of_week);
-        $dayOfWeekArray = array_map('trim', $dayOfWeekArray);
+        $dateArray = $this->generateWeekdays($day_of_week,$startDate,$endDate);
+        
 
-        for ($i = 0; $i < count($dayOfWeekArray); $i++) {
-            Schedule::create([
-                'class_id' => $class->id,
-                'day_of_week' => $dayOfWeekArray[$i],
+        for ($i=0; $i<count($dateArray) ;$i++){
+            SchoolClass::create([
+                'course_id' => $request->course_id,
+                'room' => $request->room,
+                'date' => $dateArray[$i],
                 'start_time' => $request->start_time,
-                'end_time' => $request->end_time
+                'end_time' => $request->end_time,
+                'day_of_week' => $request->day_of_week
             ]);
         }
-
+        
         return response()->json([
             'status' => 201,
             'message' => 'Created successfully'
+        ]);
+    }
+
+    public function get_course_detail(string $id){
+        $course = Course::findOrFail($id);
+        return response()->json([
+            "status" => 200,
+            "data" => new CourseResource($course)
         ]);
     }
 
@@ -177,30 +185,5 @@ class ScheduleController extends Controller
             ], 201);
         }
     }
-
-
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
+    
 }
