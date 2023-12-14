@@ -67,10 +67,11 @@ class TaskController extends Controller
         $courseId = $request->input('course_id');
 
         $userId = DB::table('tasks_view')
-            ->select('user_id')
-            ->where('course_id', '=', $courseId)
-            ->first()
-            ->user_id;
+        ->select('user_id')
+        ->where('course_id', '=', $courseId)
+        ->first()
+        ->user_id;
+
 
 
         if ($userId === auth()->id()) {
