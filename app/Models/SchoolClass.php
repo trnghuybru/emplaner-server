@@ -11,10 +11,14 @@ class SchoolClass extends Model
 {
     use HasFactory;
 
-    public function schedules(): HasMany
-    {
-        return $this->hasMany(Schedule::class);
-    }
+    protected $fillable = [
+        'course_id',
+        'room',
+        'date',
+        'start_time',
+        'end_time',
+        'day_of_week'
+    ];
 
     public function course(): BelongsTo
     {

@@ -11,6 +11,15 @@ class Course extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'semester_id',
+        'name',
+        'color_code',
+        'teacher',
+        'start_date',
+        'end_date'
+    ];
+
     public function semester(): BelongsTo
     {
         return $this->belongsTo(Semester::class);

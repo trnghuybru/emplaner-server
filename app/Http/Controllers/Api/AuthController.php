@@ -60,28 +60,6 @@ class AuthController extends Controller
             'message' => 'Logged out successfully'
         ]);
     }
-    /**
-     * @OA\Post(
-     *     path="/register",
-     *     summary="Register",
-     *     @OA\Parameter(
-     *         name="email",
-     *         in="query",
-     *         description="User's email",
-     *         required=true,
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         name="password",
-     *         in="query",
-     *         description="User's password",
-     *         required=true,
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Response(response="200", description="Register successful"),
-     *     @OA\Response(response="401", description="Invalid credentials")
-     * )
-     */
 
 
     public function register(Request $request)

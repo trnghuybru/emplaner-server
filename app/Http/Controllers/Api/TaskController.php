@@ -60,7 +60,8 @@ class TaskController extends Controller
             'description' => 'nullable|string|max:255',
             'start_date' => 'required|date',
             'end_date' => 'required|date',
-            'exam_id' => 'nullable'
+            'exam_id' => 'nullable',
+            'type' => 'required|string'
         ]);
 
         $courseId = $request->input('course_id');
@@ -72,6 +73,7 @@ class TaskController extends Controller
         ->user_id;
 
 
+
         if ($userId === auth()->id()) {
             $task = Task::create([
                 'course_id' => $courseId,
@@ -80,25 +82,26 @@ class TaskController extends Controller
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date
             ]);
+
             $type_task = TypeTask::create([
                 ...$request->validate([
                     'type' => 'required|string',
-                    'exam_id' => 'integer'
+                    'exam_id' => 'integer|nullable'
                 ]),
                 'task_id' => $task->id
             ]);
+
+
             return response()->json([
                 'status' => 201,
                 'data' => new TaskResource($task)
             ]);
-        }else {
+        } else {
             return response()->json([
                 'status' => 403,
                 'message' => 'Unauthorized'
-            ],403);
+            ], 403);
         }
-
-
     }
 
     /**
@@ -107,13 +110,12 @@ class TaskController extends Controller
     public function show(Task $task)
     {
         $userId = DB::table('tasks_view')
-        ->select('user_id')
-        ->where('id', '=', $task->id)
-        ->first()
-        ->user_id;
+            ->select('user_id')
+            ->where('id', '=', $task->id)
+            ->first()
+            ->user_id;
 
-        if($userId === auth()->id())
-        {
+        if ($userId === auth()->id()) {
             $taskDetail = DB::table('tasks_view')->select([
                 'id',
                 'name',
@@ -123,9 +125,9 @@ class TaskController extends Controller
                 'exam_id',
                 'course_id',
                 'course_name'
-            ])->where('id','=',$task->id)
-            ->first();
-            if ($taskDetail->exam_id != null){
+            ])->where('id', '=', $task->id)
+                ->first();
+            if ($taskDetail->exam_id != null) {
                 $exam = Exam::find($taskDetail->exam_id);
 
                 $taskDetail->exam_id = $exam->id;
@@ -137,13 +139,11 @@ class TaskController extends Controller
                 'status' => 200,
                 'data' => $taskDetail
             ]);
-
-        }
-        else {
+        } else {
             return response()->json([
                 'status' => 403,
                 'message' => 'Unauthorized'
-            ],403);
+            ], 403);
         }
     }
 
@@ -154,7 +154,45 @@ class TaskController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'course_id' => 'integer|required',
+            'name'  =>  'required|string|max:255',
+            'description' => 'nullable|string|max:255',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
+            'exam_id' => 'nullable',
+            'type' => 'required|string'
+        ]);
+
+        $courseId = $request->input('course_id');
+
+        $task = Task::findOrFail($id);
+
+        if ($courseId == $task->course_id && $task->course->semester->school_year->user->id == auth()->id()) {
+            $task->update([
+                'course_id' => $courseId,
+                'name' => $request->name,
+                'description' => $request->description,
+                'start_date' => $request->start_date,
+                'end_date' => $request->end_date
+            ]);
+
+            $typeTask = $task->type_task;
+            $typeTask->update([
+                'type' => $request->type,
+                'exam_id' => $request->exam_id
+            ]);
+
+            return response()->json([
+                'status' => 200,
+                'data' => "Updated Successfully"
+            ]);
+        } else {
+            return response()->json([
+                'status' => 403,
+                'message' => 'Unauthorized'
+            ], 403);
+        }
     }
 
     /**
@@ -163,24 +201,24 @@ class TaskController extends Controller
     public function destroy(Task $task)
     {
         $userId = DB::table('tasks_view')
-        ->select('user_id')
-        ->where('id', '=', $task->id)
-        ->first()
-        ->user_id;
+            ->select('user_id')
+            ->where('id', '=', $task->id)
+            ->first()
+            ->user_id;
 
-        if($userId === auth()->id()){
+        if ($userId === auth()->id()) {
             TypeTask::where('task_id', $task->id)->delete();
             $task->delete();
 
             return response()->json([
-                'status' => 201,
+                'status' => 200,
                 'message' => "Delete successfully"
-            ],201);
+            ], 200);
         } else {
             return response()->json([
                 'status' => 403,
                 'message' => 'Unauthorized'
-            ],403);
+            ], 403);
         }
     }
 }
