@@ -118,13 +118,14 @@ class DashboardController extends Controller
         )
         ->get();
 
-    $result = [
-        'Exam' => [],
-        'class' => [],
-    ];
+    // $result = [
+    //     'exam' => [],
+    //     'class' => [],
+    // ];
 
     foreach ($exams as $exam) {
-        $result['Exam'][] = [
+
+        $result['exam'][] = [
             'id' => $exam->exam_id,
             'name' => $exam->name,
             'color_code' => $exam->color_code,
@@ -139,10 +140,15 @@ class DashboardController extends Controller
             'room' => $exam->class_room,
             'start_date' => $exam->class_start_date,
         ];
+
     }
 
     return $result;
 }
+
+
+
+
 
 
     // private function getExams($user_id, $date)
