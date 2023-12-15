@@ -101,7 +101,7 @@ class DashboardController extends Controller
         return DB::table('exams_view')
             ->where('user_id', $user_id)
             ->whereDate('start_date', $date)
-            ->select('id','name', 'start_date', 'room')
+            ->select('id','name','color_code','start_date', 'room')
             ->get();
     }
 
