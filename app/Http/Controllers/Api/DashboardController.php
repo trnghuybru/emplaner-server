@@ -89,22 +89,79 @@ class DashboardController extends Controller
             "status" => 200,
             "data" => [
                 "today" => $examsToday,
-                "tomorrow" => $examsTomorrow
+                "tomorrow" => $examsTomorrow,
             ]
         ];
 
         return response()->json($result);
     }
-
     private function getExams($user_id, $date)
-    {
-        return DB::table('exams_view')
-            ->where('user_id', $user_id)
-            ->whereDate('start_date', $date)
-            ->select('id','name','color_code','start_date', 'room')
-            ->get();
+{
+    $exams = DB::table('exams_view')
+        ->leftJoin('classes_view', function ($join) {
+            $join->on('exams_view.course_id', '=', 'classes_view.course_id')
+                ->on('exams_view.room', '=', 'classes_view.room');
+        })
+        ->where('exams_view.user_id', $user_id)
+        ->whereDate('exams_view.start_date', $date)
+        ->select(
+            'exams_view.id as exam_id',
+            'exams_view.name',
+            'exams_view.color_code',
+            'exams_view.start_date',
+            'exams_view.room',
+            'classes_view.id as class_id',
+            'classes_view.course_name',
+            'classes_view.teacher',
+            'classes_view.room as class_room',
+            'classes_view.start_date as class_start_date'
+        )
+        ->get();
+
+    $result = [
+        'Exam' => [],
+        'class' => [],
+    ];
+
+    foreach ($exams as $exam) {
+        $result['Exam'][] = [
+            'id' => $exam->exam_id,
+            'name' => $exam->name,
+            'color_code' => $exam->color_code,
+            'start_date' => $exam->start_date,
+            'room' => $exam->room,
+        ];
+
+        $result['class'][] = [
+            'id' => $exam->class_id,
+            'course_name' => $exam->course_name,
+            'teacher' => $exam->teacher,
+            'room' => $exam->class_room,
+            'start_date' => $exam->class_start_date,
+        ];
     }
 
+    return $result;
+}
+
+
+    // private function getExams($user_id, $date)
+    // {
+    //     return DB::table('exams_view')
+    //         ->where('user_id', $user_id)
+    //         ->whereDate('start_date', $date)
+    //         ->select('id','name','color_code','start_date', 'room')
+    //         ->get();
+    // }
+
+    // private function getClasses($user_id, $date)
+    // {
+    //     return DB::table('classes_view')
+    //         ->where('user_id', $user_id)
+    //         ->whereDate('start_date', $date)
+    //         ->select('id','course_id','teacher','start_date', 'room')
+    //         ->get();
+    // }
 
     public function get_due_tasks(Request $request){
 
