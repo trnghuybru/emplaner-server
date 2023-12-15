@@ -59,13 +59,15 @@ Route::post('schedules/store_semester',[ScheduleController::class,'store_semeste
 
 Route::delete('schedules/destroy_course/{id}',[ScheduleController::class,'destroy_course']);
 
-Route::get('/exams/{id}', [ExamController::class, 'show']);
+Route::get('/exams', [ExamController::class, 'index']);
+
+Route::get('/exams/{exam}', [ExamController::class, 'show']);
 
 Route::post('/exams', [ExamController::class, 'store']);
 
-Route::put('/exams/{id}', [ExamController::class, 'update']);
+Route::put('/exams/{exam}', [ExamController::class, 'update']);
 
-Route::delete('/exams/{id}', [ExamController::class, 'destroy']);
+Route::delete('/exams/{exam}', [ExamController::class, 'destroy']);
 
 Route::get('/calendars/get_detail_class/{id}',[CalendarController::class,'get_detail_class']);
 

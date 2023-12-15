@@ -39,7 +39,7 @@ class DashboardController extends Controller
         // ->where('tasks.status', 0)
         // ->where('users.id', $id)
         $noTaskIncomplete = DB::table('tasks_view')
-        ->where('end_date', '=', $today) 
+        ->where('end_date', '=', $today)
         ->where('status', '=', 0)
         ->where('user_id', '=', $id)
         ->count();
@@ -49,13 +49,13 @@ class DashboardController extends Controller
         // ->join('school_years', 'semesters.school_year_id', '=', 'school_years.id')
         // ->join('users', 'school_years.user_id', '=', 'users.id')
         // ->where('tasks.end_date', $today)
-        // ->where('tasks.status', 1) 
+        // ->where('tasks.status', 1)
         // ->where('users.id', $id)
         // ->count();
         $noTaskComplete = DB::table('tasks_view')
         ->where('end_date', '=', $today)
         ->where('status', '=', 1)
-        ->where('user_id', '=', $id) 
+        ->where('user_id', '=', $id)
         ->count();
         //Cumulative Time
         $minute = Pomodoro::where("user_id","=", $id)
@@ -78,43 +78,39 @@ class DashboardController extends Controller
      */
     public function get_classes_exams(Request $request)
     {
-        
-// truyền data vào phần data
-        return response()->json(
-            [
-                "status" => 200,
-                "data" => [
-                    "today" => [
-                        "classes" => [
-                            "type" => "class",
-                            "data" => ""
-                        ],
-                        "exams" => [
-                            "type" => "exam",
-                            "data" => "" 
-                        ]
-                    ],
-                    "tomorrow" => [
-                        "classes" => [
-                            "type" => "class",
-                            "data" => ""
-                        ],
-                        "exams" => [
-                            "type" => "exam",
-                            "data" => ""
-                        ]
-                    ]
-                ]
-            ]
+        $user_id = $request->user()->id;
+        $today = now()->toDateString();
+        $tomorrow = now()->addDay()->toDateString();
 
-        );
+        $examsToday = $this->getExams($user_id, $today);
+        $examsTomorrow = $this->getExams($user_id, $tomorrow);
+
+        $result = [
+            "status" => 200,
+            "data" => [
+                "today" => $examsToday,
+                "tomorrow" => $examsTomorrow
+            ]
+        ];
+
+        return response()->json($result);
     }
+
+    private function getExams($user_id, $date)
+    {
+        return DB::table('exams_view')
+            ->where('user_id', $user_id)
+            ->whereDate('start_date', $date)
+            ->select('name', 'start_date', 'room')
+            ->get();
+    }
+
 
     public function get_due_tasks(Request $request){
 
         $id = $request->user()->id;
         $today = now()->toDateString();
-        
+
         $due_tasks = DB::select('CALL GetTodayDueTasks(?,?)',[
             $id,
             $today
@@ -130,7 +126,7 @@ class DashboardController extends Controller
     {
         $id = $request->user()->id;
         $today = now()->toDateString();
-        
+
         $overdue_tasks = DB::select('CALL GetTodayOverdueTasks(?,?)',[
             $id,
             $today
