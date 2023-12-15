@@ -72,9 +72,9 @@ class TaskController extends Controller
         ->first()
         ->user_id;
 
-
-
-        if ($userId === auth()->id()) {
+        $exam = Exam::findOrFail($request->exam_id);
+        
+        if ($userId === auth()->id() || $exam->course->semester->school_year->user_id === auth()->id()) {
             $task = Task::create([
                 'course_id' => $courseId,
                 'name' => $request->name,
