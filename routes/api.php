@@ -73,3 +73,5 @@ Route::get('/calendars/get_detail_class/{id}',[CalendarController::class,'get_de
 
 //schooolyear
 Route::post('/school-years', [SchoolYearController::class, 'store']);
+Route::put('/school-years/{id}', [SchoolYearController::class, 'update']);
+Route::post('/school-years/{id}', [SchoolYearController::class, 'detroy']);
