@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ExamController;
 use App\Http\Controllers\Api\CalendarController;
-
+use App\Http\Controllers\Api\SchoolYearController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -71,3 +71,7 @@ Route::delete('/exams/{exam}', [ExamController::class, 'destroy']);
 
 Route::get('/calendars/get_detail_class/{id}',[CalendarController::class,'get_detail_class']);
 
+//schooolyear
+Route::post('/school-years', [SchoolYearController::class, 'store']);
+Route::put('/school-years/{id}', [SchoolYearController::class, 'update']);
+Route::post('/school-years/{id}', [SchoolYearController::class, 'detroy']);
