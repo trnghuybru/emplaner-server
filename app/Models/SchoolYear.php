@@ -10,7 +10,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class SchoolYear extends Model
 {
     use HasFactory;
-
+    protected $fillable = [
+        'user_id',
+        'start_date',
+        'end_date',
+    ];
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
