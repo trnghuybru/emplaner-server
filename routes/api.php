@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ExamController;
 use App\Http\Controllers\Api\CalendarController;
 use App\Http\Controllers\Api\SchoolYearController;
+use PhpParser\Builder\Class_;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -48,8 +50,9 @@ Route::apiResources([
 
 
 Route::post('/schedules/store_class',[ScheduleController::class,'store_class']);
-
 Route::get('/schedules/get_class_list',[ScheduleController::class,'get_class_list']);
+Route::delete('/calendars/destroy_class/{id}',[CalendarController::class,'destroy']);
+Route::put('/calendars/update_class/{id}',[CalendarController::class,'update']);
 
 Route::get('/schedules/get_course_detail/{id}',[ScheduleController::class,'get_course_detail']);
 

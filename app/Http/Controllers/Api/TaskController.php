@@ -194,7 +194,7 @@ class TaskController extends Controller
 
             return response()->json([
                 'status' => 200,
-                'data' => "Updated Successfully"
+                'message' => "Updated Successfully"
             ]);
         } else {
             return response()->json([
