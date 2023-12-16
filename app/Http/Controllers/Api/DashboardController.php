@@ -9,6 +9,7 @@ use App\Models\Exam;
 use App\Models\Pomodoro;
 use App\Models\SchoolClass;
 use App\Models\Task;
+use App\Models\User;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Database\Eloquent\Collection;
@@ -82,18 +83,63 @@ class DashboardController extends Controller
         $today = now()->toDateString();
         $tomorrow = now()->addDay()->toDateString();
 
-        $examsToday = $this->getExams($user_id, $today);
-        $examsTomorrow = $this->getExams($user_id, $tomorrow);
+        $user = User::findOrFail($user_id);
 
+        $classes = $user->school_years->flatMap(function ($schoolYear) {
+            return $schoolYear->semesters->flatMap(function ($semester) {
+                return $semester->courses->flatMap(function ($course) {
+                    return $course->school_classes;
+                });
+            });
+        });
+
+        $classes->each(function ($class){
+            $class->course_name = $class->course->name;
+            $class->teacher = $class->course->teacher;
+            unset($class->created_at,
+                $class->updated_at,
+                $class->end_time,
+                $class->start_time
+            );
+            unset($class->course);
+        });
+
+        $classes_today = $classes->where('date','=',$today);
+        $classes_tomorrow = $classes->where('date','=',$tomorrow);
+//..................................................
+        $exams = $user->school_years->flatMap(function ($schoolYear) {
+            return $schoolYear->semesters->flatMap(function ($semester){
+                return $semester->courses->flatMap(function ($course){
+                    return $course->exams;
+                });
+            });
+        });
+
+        $exams->each(function ($ex){
+            $ex->course_name = $ex->course->name;
+            $ex->teacher = $ex->course->teacher;
+            unset($ex->created_at, $ex->updated_at);
+            unset($ex->course);
+        });
+
+        $exams_today = $exams->where('start_date','=',$today);
+        $exams_tomorrow = $exams->where('start_date','=',$tomorrow);
+//----------------------------------
         $result = [
             "status" => 200,
             "data" => [
-                "today" => $examsToday,
-                "tomorrow" => $examsTomorrow
+                "today" => [
+                    "class" => $classes_today,
+                    "exam" => $exams_today
+                ],
+                "tomorrow" => [
+                    "class" => $classes_tomorrow,
+                    "exam" => $exams_tomorrow
+                ]
             ]
         ];
 
-        return response()->json($result);
+        return response()->json($result,200);
     }
 
     private function getExams($user_id, $date)
