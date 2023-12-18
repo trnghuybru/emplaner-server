@@ -23,6 +23,7 @@ class TaskViewResource extends JsonResource
             'status' => $this->status,
             'type' => $this->type,
             'exam_id' => $this->exam_id,
+            'course_id' => $this->course_id,
             'course_name' => $this->course_name,
             'color_code' => $this->color_code,
             'semester_name' => $this->semester_name,
