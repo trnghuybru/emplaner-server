@@ -127,6 +127,12 @@ class CalendarController extends Controller
                     });
                 });
             });
+
+            $classes->each(function ($class){
+                $class->course_name = $class->course->name;
+                $class->teacher = $class->course->teacher;
+                unset($class->course);
+            });
             return response()->json([
                 'status' => 200,
                 'data' => $classes
