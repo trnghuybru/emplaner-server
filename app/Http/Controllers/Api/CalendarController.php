@@ -23,6 +23,7 @@ class CalendarController extends Controller
 
         $tasks = $class->course->tasks->where('end_date', '=', $class->date);
         $tasks->each(function ($t) {
+            $t->course_name = $t->course->name;
             unset($t->created_at, $t->updated_at, $t->description, $t->start_date, $t->end_date);
             $t->type = $t->type_task->type;
             unset($t->type_task);
@@ -37,6 +38,7 @@ class CalendarController extends Controller
 
         if ($class->course->semester->school_year->user_id === auth()->id()) {
             $class->course_name = $class->course->name;
+            $class->teacher = $class->course->teacher;
             unset($class->course);
             unset($class->created_at, $class->updated_at);
             return response()->json([
