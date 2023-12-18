@@ -91,6 +91,7 @@ class DashboardController extends Controller
                     return $course->school_classes;
                 });
             });
+            
         });
 
         $classes->each(function ($class){
@@ -101,6 +102,7 @@ class DashboardController extends Controller
                 $class->end_time
             );
             unset($class->course);
+            return $class->toArray();
         });
 
         $classes_today = $classes->where('date','=',$today);
@@ -119,6 +121,7 @@ class DashboardController extends Controller
             $ex->teacher = $ex->course->teacher;
             unset($ex->created_at, $ex->updated_at);
             unset($ex->course);
+            return $ex->toArray();
         });
 
         $exams_today = $exams->where('start_date','=',$today);
@@ -130,12 +133,12 @@ class DashboardController extends Controller
             "status" => 200,
             "data" => [
                 "today" => [
-                    "class" => $classes_today,
-                    "exam" => $exams_today
+                    "class" => $classes_today->values()->all(),
+                    "exam" => $exams_today->values()->all()
                 ],
                 "tomorrow" => [
-                    "class" => $classes_tomorrow,
-                    "exam" => $exams_tomorrow
+                    "class" => $classes_tomorrow->values()->all(),
+                    "exam" => $exams_tomorrow->values()->all()
                 ]
             ]
         ],200);
