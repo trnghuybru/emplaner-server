@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Traits\ProcessDataDateType;
 use App\Models\SchoolClass;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -56,42 +57,43 @@ class CalendarController extends Controller
     {
         $class = SchoolClass::find($id);
 
-        if (!$class){
+        if (!$class) {
             return response()->json([
                 "status" => 400,
                 "message" => "Not found"
-            ],400);
+            ], 400);
         }
 
-        if (auth()->id()===$class->course->semester->school_year->user_id)
-        {
-            if($class->delete()){
+        if (auth()->id() === $class->course->semester->school_year->user_id) {
+            if ($class->delete()) {
                 return response()->json([
                     "status" => 200,
                     "message" => "Deleted successfully"
-                ],200);
-            }else {
-                return response()->json(['status' => 500 ], 500);
+                ], 200);
+            } else {
+                return response()->json(['status' => 500], 500);
             }
         }
-        return response()->json(['status' => 403,
-                                'message' => 'Unauthorized'
+        return response()->json([
+            'status' => 403,
+            'message' => 'Unauthorized'
         ], 403);
     }
 
-    public function update(Request $request, string $id){
-        
-        
+    public function update(Request $request, string $id)
+    {
+
+
         $class = SchoolClass::find($id);
 
-        if (!$class){
+        if (!$class) {
             return response()->json([
                 "status" => 400,
                 "message" => "Not found"
-            ],400);
+            ], 400);
         }
 
-        if(auth()->id() === $class->course->semester->school_year->user_id){
+        if (auth()->id() === $class->course->semester->school_year->user_id) {
             $class->update([
                 ...$request->validate([
                     'course_id' => 'required|integer',
@@ -111,5 +113,24 @@ class CalendarController extends Controller
             'status' => 403,
             'message' => 'Unauthorized'
         ], 403);
+    }
+
+    public function get_list_classes()
+    {
+        $userId = auth()->id();
+        if ($userId) {
+            $user = User::find($userId);
+            $classes = $user->school_years->flatMap(function ($schoolYear) {
+                return $schoolYear->semesters->flatMap(function ($semester) {
+                    return $semester->courses->flatMap(function ($course) {
+                        return $course->school_classes;
+                    });
+                });
+            });
+            return response()->json([
+                'status' => 200,
+                'data' => $classes
+            ],200);
+        }
     }
 }

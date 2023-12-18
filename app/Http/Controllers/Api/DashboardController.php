@@ -91,7 +91,6 @@ class DashboardController extends Controller
                     return $course->school_classes;
                 });
             });
-            
         });
 
         $classes->each(function ($class){
