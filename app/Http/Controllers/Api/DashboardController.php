@@ -124,7 +124,9 @@ class DashboardController extends Controller
         $exams_today = $exams->where('start_date','=',$today);
         $exams_tomorrow = $exams->where('start_date','=',$tomorrow);
 //----------------------------------
-        $result = [
+        
+
+        return response()->json([
             "status" => 200,
             "data" => [
                 "today" => [
@@ -136,9 +138,7 @@ class DashboardController extends Controller
                     "exam" => $exams_tomorrow
                 ]
             ]
-        ];
-
-        return response()->json($result,200);
+        ],200);
     }
  
 
