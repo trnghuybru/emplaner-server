@@ -98,7 +98,7 @@ class DashboardController extends Controller
             $class->teacher = $class->course->teacher;
             unset($class->created_at,
                 $class->updated_at,
-                $class->start_time
+                $class->end_time
             );
             unset($class->course);
         });
