@@ -78,3 +78,6 @@ Route::get('/calendars/get_detail_class/{id}',[CalendarController::class,'get_de
 Route::post('/school-years', [SchoolYearController::class, 'store']);
 Route::put('/school-years/{id}', [SchoolYearController::class, 'update']);
 Route::post('/school-years/{id}', [SchoolYearController::class, 'detroy']);
+
+Route::apiResource('settings', SettingController::class)->only('update');
+
