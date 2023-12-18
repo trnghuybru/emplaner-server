@@ -54,6 +54,7 @@ Route::get('/schedules/get_class_list',[ScheduleController::class,'get_class_lis
 Route::delete('/calendars/destroy_class/{id}',[CalendarController::class,'destroy']);
 Route::put('/calendars/update_class/{id}',[CalendarController::class,'update']);
 Route::get('/calendars/get_list_classes',[CalendarController::class,'get_list_classes']);
+
 Route::get('/schedules/get_course_detail/{id}',[ScheduleController::class,'get_course_detail']);
 
 Route::post('schedules/store_course',[ScheduleController::class,'store_course']);
@@ -79,5 +80,5 @@ Route::post('/school-years', [SchoolYearController::class, 'store']);
 Route::put('/school-years/{id}', [SchoolYearController::class, 'update']);
 Route::post('/school-years/{id}', [SchoolYearController::class, 'detroy']);
 
-Route::apiResource('settings', SettingController::class)->only('update');
+// Route::apiResource('settings', SettingController::class)->only('update');
 
