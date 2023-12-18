@@ -36,6 +36,7 @@ class CalendarController extends Controller
         }
 
         if ($class->course->semester->school_year->user_id === auth()->id()) {
+            $class->course_name = $class->course->name;
             unset($class->course);
             unset($class->created_at, $class->updated_at);
             return response()->json([
