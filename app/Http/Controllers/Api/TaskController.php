@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\TaskResource;
 use App\Http\Resources\TaskViewResource;
 use App\Http\Traits\CanLoadRelationships;
+use App\Models\Course;
 use App\Models\Exam;
 use App\Models\Task;
 use App\Models\TypeTask;
@@ -209,6 +210,7 @@ class TaskController extends Controller
      */
     public function destroy(Task $task)
     {
+        
         $userId = DB::table('tasks_view')
             ->select('user_id')
             ->where('id', '=', $task->id)
@@ -229,5 +231,27 @@ class TaskController extends Controller
                 'message' => 'Unauthorized'
             ], 403);
         }
+    }
+
+    public function get_exams_by_course(string $id){
+        $course = Course::find($id);
+
+        if ($course && $course->semester->school_year->user_id == auth()->id()){
+            $today = now()->toDateString();
+            $exams = $course->exams->where('course_id','=',$id)->where('start_date','>=',$today);
+        }
+
+        $exams->each(function ($e){
+            unset($e->start_time);
+            unset($e->start_date);
+            unset($e->duration);
+            unset($e->room);
+            unset($e->created_at);
+            unset($e->updated_at);
+        });
+        return response()->json([
+            'status' => 200,
+            'data' => $exams
+        ]);
     }
 }
