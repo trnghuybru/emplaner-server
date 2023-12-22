@@ -260,7 +260,7 @@ class TaskController extends Controller
     public function destroy_tasks(Request $request){
         $arrId = $request->arrId;
         for($i=0;$i<count($arrId);$i++){
-            $task = Task::find($arrId[i]);
+            $task = Task::find($arrId[$i]);
             $task->type_task->delete();
             $task->delete();
         }
