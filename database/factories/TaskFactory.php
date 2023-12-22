@@ -16,7 +16,7 @@ class TaskFactory extends Factory
      */
     public function definition(): array
     {   
-        $start_date = fake()->dateTimeBetween('now', '2023-12-21')->format('Y-m-d');
+        $start_date = fake()->dateTimeBetween('now', '2024-12-21')->format('Y-m-d');
         return [
             'name' => fake()->sentence(random_int(4,7)),
             'description' => fake()->paragraph(1),

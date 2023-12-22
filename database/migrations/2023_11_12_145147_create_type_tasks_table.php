@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('type');
             $table->timestamps();
             $table->foreign('task_id')->references('id')->on('tasks');
-            $table->foreign('exam_id')->references('id')->on('exams');
+            $table->foreign('exam_id')->references('id')->on('exams')->onDelete('set null');
         });
     }
 
