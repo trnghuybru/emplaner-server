@@ -83,4 +83,5 @@ Route::post('/school-years/{id}', [SchoolYearController::class, 'detroy']);
 // Route::apiResource('settings', SettingController::class)->only('update');
 
 Route::get('/tasks/get_exams_by_course/{id}',[TaskController::class,'get_exams_by_course']);
-Route::delete('/tasks/destroy_tasks',[TaskController::class,'destroy_tasks']);
+
+Route::delete('/calendars/delete_tasks',[CalendarController::class,'delete_tasks']);
