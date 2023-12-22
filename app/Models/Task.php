@@ -17,7 +17,8 @@ class Task extends Model
         'name',
         'description',
         'start_date',
-        'end_date'
+        'end_date',
+        'status'
     ];
     public function course(): BelongsTo
     {

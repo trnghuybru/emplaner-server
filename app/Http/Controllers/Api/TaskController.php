@@ -177,7 +177,7 @@ class TaskController extends Controller
 
         $courseId = $request->input('course_id');
 
-        $task = Task::findOrFail($id);
+        $task = Task::find($id);
 
         if ($courseId == $task->course_id && $task->course->semester->school_year->user->id == auth()->id()) {
             $task->update([
@@ -188,6 +188,7 @@ class TaskController extends Controller
                 'end_date' => $request->end_date,
                 'status' => $request->status
             ]);
+            
 
             $typeTask = $task->type_task;
             $typeTask->update([
