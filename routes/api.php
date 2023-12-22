@@ -44,6 +44,7 @@ Route::get('/dashboard/get_due_tasks',[DashboardController::class,'get_due_tasks
 
 Route::get('/dashboard/get_overdue_tasks',[DashboardController::class,'get_overdue_tasks']);
 
+Route::get('/tasks/get_courses',[TaskController::class,'get_courses']);
 Route::apiResources([
     'tasks' => TaskController::class
 ]);
@@ -85,3 +86,4 @@ Route::post('/school-years/{id}', [SchoolYearController::class, 'detroy']);
 Route::get('/tasks/get_exams_by_course/{id}',[TaskController::class,'get_exams_by_course']);
 
 Route::delete('/calendars/delete_tasks',[CalendarController::class,'delete_tasks']);
+

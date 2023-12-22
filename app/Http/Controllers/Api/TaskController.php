@@ -257,5 +257,31 @@ class TaskController extends Controller
         ]);
     }
 
+    public function get_courses()
+{
+    $user = User::find(auth()->id());
+
+    if ($user) {
+        // Assuming User has many SchoolYear
+        $schoolYears = $user->school_years;
+
+        $courses = collect();
+
+        foreach ($schoolYears as $schoolYear) {
+            // Assuming SchoolYear has many Semester
+            $semesters = $schoolYear->semesters;
+
+            foreach ($semesters as $semester) {
+                // Assuming Semester has many Course
+                $courses = $courses->merge($semester->courses);
+            }
+        }
+
+        return response()->json([
+            'status' => 200,
+            'data' => $courses->unique()
+        ], 200);
+    }
+}
     
 }
