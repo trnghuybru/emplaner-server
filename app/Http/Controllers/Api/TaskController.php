@@ -213,7 +213,6 @@ class TaskController extends Controller
      */
     public function destroy(Task $task)
     {
-        
         $userId = DB::table('tasks_view')
             ->select('user_id')
             ->where('id', '=', $task->id)
@@ -255,6 +254,19 @@ class TaskController extends Controller
         return response()->json([
             'status' => 200,
             'data' => $exams
+        ]);
+    }
+
+    public function destroy_tasks(Request $request){
+        $arrId = $request->arrId;
+        for($i=0;$i<count($arrId);$i++){
+            $task = Task::find($arrId[i]);
+            $task->type_task->delete();
+            $task->delete();
+        }
+        return response()->json([
+            'status' => 200,
+            'message' => "Delete successfully"
         ]);
     }
 }
