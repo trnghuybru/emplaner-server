@@ -170,6 +170,7 @@ class TaskController extends Controller
             'description' => 'nullable|string|max:255',
             'start_date' => 'required|date',
             'end_date' => 'required|date',
+            'status' => 'required',
             'exam_id' => 'nullable',
             'type' => 'required|string'
         ]);
@@ -184,7 +185,8 @@ class TaskController extends Controller
                 'name' => $request->name,
                 'description' => $request->description,
                 'start_date' => $request->start_date,
-                'end_date' => $request->end_date
+                'end_date' => $request->end_date,
+                'status' => $request->status
             ]);
 
             $typeTask = $task->type_task;
