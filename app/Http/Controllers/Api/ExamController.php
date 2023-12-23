@@ -179,8 +179,9 @@ class ExamController extends Controller
 
         if ($userId === auth()->id()) {
             
-            $exam->type_task->update(['exam_id' => null]);
-
+            if ($exam->type_task !== null && $exam->type_task->exam_id !== null) {
+                $exam->type_task->update(['exam_id' => null]);
+            }
             $exam->delete();
 
             return response()->json([
