@@ -8,6 +8,8 @@ use App\Http\Resources\TaskViewResource;
 use App\Http\Traits\CanLoadRelationships;
 use App\Models\Course;
 use App\Models\Exam;
+use App\Models\SchoolYear;
+use App\Models\Semester;
 use App\Models\Task;
 use App\Models\TypeTask;
 use App\Models\User;
@@ -68,14 +70,14 @@ class TaskController extends Controller
         $courseId = $request->input('course_id');
 
         $userId = DB::table('tasks_view')
-        ->select('user_id')
-        ->where('course_id', '=', $courseId)
-        ->first()
-        ->user_id;
-        
+            ->select('user_id')
+            ->where('course_id', '=', $courseId)
+            ->first()
+            ->user_id;
+
         if ($request->exam_id !== null) {
             $exam = Exam::find($request->exam_id);
-        
+
             if (!$exam || $exam->course->semester->school_year->user_id === auth()->id() && $courseId != $exam->course_id) {
                 return response()->json([
                     'status' => 403,
@@ -83,7 +85,7 @@ class TaskController extends Controller
                 ], 403);
             }
         }
-        
+
         if ($userId === auth()->id()) {
             $task = Task::create([
                 'course_id' => $courseId,
@@ -188,7 +190,7 @@ class TaskController extends Controller
                 'end_date' => $request->end_date,
                 'status' => $request->status
             ]);
-            
+
 
             $typeTask = $task->type_task;
             $typeTask->update([
@@ -235,15 +237,16 @@ class TaskController extends Controller
         }
     }
 
-    public function get_exams_by_course(string $id){
+    public function get_exams_by_course(string $id)
+    {
         $course = Course::find($id);
 
-        if ($course && $course->semester->school_year->user_id == auth()->id()){
+        if ($course && $course->semester->school_year->user_id == auth()->id()) {
             $today = now()->toDateString();
-            $exams = $course->exams->where('course_id','=',$id)->where('start_date','>=',$today);
+            $exams = $course->exams->where('course_id', '=', $id)->where('start_date', '>=', $today);
         }
 
-        $exams->each(function ($e){
+        $exams->each(function ($e) {
             unset($e->start_time);
             unset($e->start_date);
             unset($e->duration);
@@ -257,31 +260,53 @@ class TaskController extends Controller
         ]);
     }
 
-    public function get_courses()
-{
-    $user = User::find(auth()->id());
+    public function get_courses(Request $request)
+    {
+        $schoolYearId = $request->query('school-year-id');
+        $semesterId = $request->query('semester-id');
 
-    if ($user) {
-        // Assuming User has many SchoolYear
-        $schoolYears = $user->school_years;
+        $user = User::find(auth()->id());
 
-        $courses = collect();
+        if ($user) {
+            if ($schoolYearId == null && $semesterId == null) {
+                $schoolYears = $user->school_years;
 
-        foreach ($schoolYears as $schoolYear) {
-            // Assuming SchoolYear has many Semester
-            $semesters = $schoolYear->semesters;
+                $courses = collect();
 
-            foreach ($semesters as $semester) {
-                // Assuming Semester has many Course
-                $courses = $courses->merge($semester->courses);
+                foreach ($schoolYears as $schoolYear) {
+                    // Assuming SchoolYear has many Semester
+                    $semesters = $schoolYear->semesters;
+
+                    foreach ($semesters as $semester) {
+                        // Assuming Semester has many Course
+                        $courses = $courses->merge($semester->courses);
+                    }
+                }
+            }else if($schoolYearId==null) {
+                $semester = Semester::find($semesterId);
+                if ($semester){
+                    $courses = $semester->courses;
+                }else {
+                    return response()->json([
+                        'status' => 400,
+                        'message' => "Not founded"
+                    ], 400);
+                }
+            }else {
+                $schoolYear = SchoolYear::find($schoolYearId);
+                if($schoolYear){
+                    $courses = collect();
+                    $semesters = $schoolYear->semesters;
+                    foreach($semesters as $semester){
+                        $courses = $courses->merge($semester->course);
+                    }
+                }
             }
-        }
 
-        return response()->json([
-            'status' => 200,
-            'data' => $courses->unique()
-        ], 200);
+            return response()->json([
+                'status' => 200,
+                'data' => $courses->unique()
+            ], 200);
+        }
     }
-}
-    
 }
