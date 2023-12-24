@@ -135,6 +135,7 @@ class ExamController extends Controller
     public function update(Request $request, Exam $exam)
     {
         $request->validate([
+            'course_id' => 'integer|required',
             'name' => 'string|max:255',
             'start_date' => 'date',
             'start_time' => 'date_format:H:i',
@@ -150,6 +151,7 @@ class ExamController extends Controller
 
         if ($userId === auth()->id()) {
             $exam->update([
+                'course_id'=> $request->course_id,
                 'name' => $request->input('name', $exam->name),
                 'start_date' => $request->input('start_date', $exam->start_date),
                 'start_time' => $request->input('start_time', $exam->start_time),
