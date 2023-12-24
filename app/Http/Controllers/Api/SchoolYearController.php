@@ -22,6 +22,17 @@ class SchoolYearController extends Controller
         $this->middleware("auth:sanctum");
     }
 
+    public function index(){
+        $user = User::find(auth()->id());
+        if($user){
+            $schoolYears = $user->school_years;
+            return response()->json([
+                'status' => 200,
+                'data' => $schoolYears
+            ]);
+        }
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -81,10 +92,9 @@ class SchoolYearController extends Controller
     }
     public function get_semesters_by_schoolYearId(string $id){
         $user = User::find(auth()->id());
-
         if ($user){
-            $schoolYear = $user->school_years->where('id','=',$id);
-            if($schoolYear->user_id!=$user->id){
+            $schoolYear = $user->school_years->find($id);
+            if($schoolYear->user_id != $user->id){
                 return response()->json([
                     'status' => 403,
                     'message' => 'Unauthorized'
