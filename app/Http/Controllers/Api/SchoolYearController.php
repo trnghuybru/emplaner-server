@@ -33,6 +33,30 @@ class SchoolYearController extends Controller
         }
     }
 
+    public function show(string $id){
+        $user = User::find(auth()->id());
+
+        if ($user){
+            $schoolYear = SchoolYear::find($id);
+            if ($schoolYear->user_id != $user->id){
+                return response()->json([
+                    'status' => 403,
+                    'message' => 'Unauthorized'
+                ],403);
+            }
+
+            return response()->json([
+                'status' => 200,
+                'data' => $schoolYear
+            ],200);
+        }
+
+        return response()->json([
+            'status' => 404,
+            'message' => 'Not founded'
+        ],404);
+    }
+
     public function store(Request $request)
     {
         $request->validate([
