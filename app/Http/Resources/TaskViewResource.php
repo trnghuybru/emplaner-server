@@ -19,6 +19,7 @@ class TaskViewResource extends JsonResource
         return [
             'id' => $this->id,
             'task_name' => $this->name,
+            'description' => $this->description,
             'end_date' => $this->end_date,
             'status' => $this->status,
             'type' => $this->type,
