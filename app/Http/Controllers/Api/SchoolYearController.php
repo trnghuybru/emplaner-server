@@ -9,6 +9,7 @@ use App\Models\Exam;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\SchoolYear;
+use App\Models\User;
 Use DB;
 class SchoolYearController extends Controller
 {
@@ -78,5 +79,22 @@ class SchoolYearController extends Controller
             'data' => $schoolYear,
         ]);
     }
+    public function get_semesters_by_schoolYearId(string $id){
+        $user = User::find(auth()->id());
 
+        if ($user){
+            $schoolYear = $user->school_years->where('id','=',$id);
+            if($schoolYear->user_id!=$user->id){
+                return response()->json([
+                    'status' => 403,
+                    'message' => 'Unauthorized'
+                ],403);
+            }
+            $semesters = $schoolYear->semesters;
+            return response()->json([
+                'status' => 200,
+                'data' => $semesters
+             ],200);
+        }
+    }
 }

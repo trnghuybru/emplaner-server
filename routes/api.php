@@ -80,7 +80,7 @@ Route::get('/calendars/get_detail_class/{id}',[CalendarController::class,'get_de
 Route::post('/school-years', [SchoolYearController::class, 'store']);
 Route::put('/school-years/{id}', [SchoolYearController::class, 'update']);
 Route::post('/school-years/{id}', [SchoolYearController::class, 'detroy']);
-
+Route::get('/schoolyears/get_semester_by_schoolYearId/{id}',[SchoolYearController::class,'get_semesters_by_schoolYearId']);
 // Route::apiResource('settings', SettingController::class)->only('update');
 
 Route::get('/tasks/get_exams_by_course/{id}',[TaskController::class,'get_exams_by_course']);
