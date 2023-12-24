@@ -79,6 +79,7 @@ Route::get('/calendars/get_detail_class/{id}',[CalendarController::class,'get_de
 //schooolyear
 Route::get('/school-years/get_all_school_years',[SchoolYearController::class,'index']);
 Route::post('/school-years', [SchoolYearController::class, 'store']);
+Route::get('/school-years/{id}',[SchoolYearController::class,'show']);
 Route::put('/school-years/{id}', [SchoolYearController::class, 'update']);
 Route::post('/school-years/{id}', [SchoolYearController::class, 'detroy']);
 Route::get('/school-years/get_semesters_by_schoolYearId/{id}',[SchoolYearController::class,'get_semesters_by_schoolYearId']);
