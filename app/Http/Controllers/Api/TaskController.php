@@ -75,9 +75,9 @@ class TaskController extends Controller
             ->first()
             ->user_id;
 
-        if ($request->exam_id !== null) {
+        if ($request->exam_id != null) {
             $exam = Exam::find($request->exam_id);
-
+            
             if (!$exam || $exam->course->semester->school_year->user_id === auth()->id() && $courseId != $exam->course_id) {
                 return response()->json([
                     'status' => 403,
