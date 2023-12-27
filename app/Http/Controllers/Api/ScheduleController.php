@@ -132,6 +132,48 @@ class ScheduleController extends Controller
         }
     }
 
+   public function update_course(Request $request, string $id)
+    {
+        $request->validate([
+            'name' => 'string|required',
+            'teacher' => 'string|required',
+            'color_code' => 'nullable|string',
+            'start_date' => 'date_format:Y-m-d|required',
+            'end_date' => 'date_format:Y-m-d|required'
+        ]);
+    
+        $course = Course::find($id);
+    
+        if (!$course) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Course not found'
+            ], 404);
+        }
+    
+        $semesterId = $request->input('semester_id');
+    
+        if ($semesterId == $course->semester_id && $course->semester->school_year->user->id == auth()->id()) {
+            $course->update([
+                'name' => $request->name,
+                'teacher' => $request->teacher,
+                'color_code' => $request->color_code,
+                'start_date' => $request->start_date,
+                'end_date' => $request->end_date
+            ]);
+    
+            return response()->json([
+                'status' => 200,
+                'message' => 'Updated successfully',
+            ]);
+        } else {
+            return response()->json([
+                'status' => 403,
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+    }
+    
     public function destroy_course(string $id)
     {
         $course = Course::find($id);
