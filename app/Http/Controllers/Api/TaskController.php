@@ -66,14 +66,9 @@ class TaskController extends Controller
             'exam_id' => 'nullable',
             'type' => 'required|string'
         ]);
-
+        $user = User::find(auth()->id());
         $courseId = $request->input('course_id');
 
-        $userId = DB::table('tasks_view')
-            ->select('user_id')
-            ->where('course_id', '=', $courseId)
-            ->first()
-            ->user_id;
 
         if ($request->exam_id != null) {
             $exam = Exam::find($request->exam_id);
@@ -86,7 +81,7 @@ class TaskController extends Controller
             }
         }
 
-        if ($userId === auth()->id()) {
+        if ($user) {
             $task = Task::create([
                 'course_id' => $courseId,
                 'name' => $request->name,
