@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ExamResource;
 use App\Http\Traits\CanLoadRelationships;
 use App\Models\Exam;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -104,13 +105,9 @@ class ExamController extends Controller
 
         $courseId = $request->input('course_id');
 
-        $userId = DB::table('exams_view')
-            ->select('user_id')
-            ->where('course_id', '=', $courseId)
-            ->first()
-            ->user_id;
+        $user = User::find(auth()->id());
 
-        if ($userId === auth()->id()) {
+        if ($user) {
             $exam = Exam::create([
                 'course_id' => $courseId,
                 'name' => $request->name,
