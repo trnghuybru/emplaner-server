@@ -135,6 +135,7 @@ class ScheduleController extends Controller
    public function update_course(Request $request, string $id)
     {
         $request->validate([
+            'semester_id' => 'integer|required',
             'name' => 'string|required',
             'teacher' => 'string|required',
             'color_code' => 'nullable|string',
