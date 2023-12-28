@@ -116,31 +116,25 @@ class TaskController extends Controller
      */
     public function show(Task $task)
     {
-        $userId = DB::table('tasks_view')
-            ->select('user_id')
-            ->where('id', '=', $task->id)
-            ->first()
-            ->user_id;
+        $user = User::find(auth()->id());
 
-        if ($userId === auth()->id()) {
-            $taskDetail = DB::table('tasks_view')->select([
-                'id',
-                'name',
-                'description',
-                'end_date',
-                'type',
-                'exam_id',
-                'course_id',
-                'course_name'
-            ])->where('id', '=', $task->id)
-                ->first();
-            if ($taskDetail->exam_id != null) {
-                $exam = Exam::find($taskDetail->exam_id);
+        if ($user) {
+            $taskDetail = Task::whereHas('course.semester.school_year', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })->where('id',$task->id)->get()->first();
 
-                $taskDetail->exam_id = $exam->id;
+            $type_task = $taskDetail->type_task;
 
-                $taskDetail->exam_name = $exam->name;
+            $taskDetail->type = $type_task->type;
+
+            if ($type_task->exam_id != null){
+                $taskDetail->exam_id = $type_task->exam_id;
+                $taskDetail->exam_name = $type_task->exam->name;
+                
+                unset($type_task->exam);
+                
             }
+            unset($taskDetail->type_task);
 
             return response()->json([
                 'status' => 200,
