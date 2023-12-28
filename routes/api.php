@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ExamController;
 use App\Http\Controllers\Api\CalendarController;
 use App\Http\Controllers\Api\SchoolYearController;
+use App\Http\Controllers\Api\UserController;
 use PhpParser\Builder\Class_;
 
 /*
@@ -91,3 +92,9 @@ Route::get('/tasks/get_exams_by_course/{id}',[TaskController::class,'get_exams_b
 
 Route::delete('/calendars/delete_tasks',[CalendarController::class,'delete_tasks']);
 
+//upload file
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/update-avatar', [UserController::class, 'updateAvatar']);
+    Route::Delete('/delete-avatar', [UserController::class, 'deleteAvatar']);
+
+});
