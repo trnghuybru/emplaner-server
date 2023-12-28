@@ -176,7 +176,7 @@ class TaskController extends Controller
 
         $task = Task::find($id);
 
-        if ($courseId == $task->course_id && $task->course->semester->school_year->user->id == auth()->id()) {
+        if ($task->course->semester->school_year->user->id == auth()->id()) {
             $task->update([
                 'course_id' => $courseId,
                 'name' => $request->name,
