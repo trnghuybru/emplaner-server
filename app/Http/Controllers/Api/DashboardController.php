@@ -166,17 +166,23 @@ class DashboardController extends Controller
 
     public function get_overdue_tasks(Request $request)
     {
-        $id = $request->user()->id;
         $today = now()->toDateString();
-
-        $overdue_tasks = DB::select('CALL GetTodayOverdueTasks(?,?)', [
-            $id,
-            $today
-        ]);
+        $user = User::find(auth()->id());
+        
+        $tasks = Task::whereHas('course.semester.school_year', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })
+            ->where('end_date', '<', $today)
+            ->get();
+        
+        $tasks->each(function ($task){
+            $task->color_code = $task->course->color_code;
+            unset($task->course);
+        });
 
         return response()->json([
             "status" => 200,
-            "data" => $overdue_tasks
+            "data" => $tasks
         ]);
     }
 
