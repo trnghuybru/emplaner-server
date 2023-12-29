@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\SchoolYear;
 use App\Models\User;
+Use App\Models\Semester;
 Use DB;
 class SchoolYearController extends Controller
 {
@@ -131,4 +132,60 @@ class SchoolYearController extends Controller
              ],200);
         }
     }
+    public function delete_semester(string $semesterId) {
+        $user = User::find(auth()->id());
+
+        if ($user) {
+            $semester = Semester::find($semesterId);
+
+            if ($semester) {
+                // Xóa tất cả các bản ghi liên quan từ bảng type_tasks trước
+                $semester->courses->each(function ($course) {
+                    $course->tasks->each(function ($task) {
+                        $task->type_task()->delete(); // Sửa thành type_task()
+                    });
+                });
+
+                // Xóa tất cả các bản ghi liên quan từ bảng tasks trước
+                $semester->courses->each(function ($course) {
+                    $course->tasks()->delete();
+                });
+
+                // Xóa tất cả các bản ghi liên quan từ bảng school_classes trước
+                $semester->courses->each(function ($course) {
+                    $course->school_classes()->delete();
+                });
+
+                // Xóa tất cả các bản ghi liên quan từ bảng exams trước
+                $semester->courses->each(function ($course) {
+                    $course->exams()->delete();
+                });
+
+                // Xóa tất cả các khóa ngoại liên quan trong bảng courses
+                $semester->courses()->delete();
+
+                // Sau đó xóa semester
+                $semester->delete();
+
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'Semester deleted successfully.'
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => 404,
+                    'message' => 'Semester not found.'
+                ], 404);
+            }
+        } else {
+            return response()->json([
+                'status' => 403,
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+    }
+
+
+
+
 }
