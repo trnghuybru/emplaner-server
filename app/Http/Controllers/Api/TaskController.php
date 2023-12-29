@@ -134,7 +134,6 @@ class TaskController extends Controller
                 $taskDetail->color_code = $task->course->color_code;
                 unset($task->course);
                 unset($type_task->exam);
-                
             }
             unset($taskDetail->type_task);
 
