@@ -292,6 +292,11 @@ class TaskController extends Controller
                 }
             }
 
+            $courses->each(function ($course){
+                $course->school_year = $course->semester->school_year;
+                unset($course->semester);
+            });
+
             return response()->json([
                 'status' => 200,
                 'data' => $courses->unique()
