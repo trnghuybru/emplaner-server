@@ -25,7 +25,7 @@ class CalendarController extends Controller
         $tasks = $class->course->tasks->where('end_date', '=', $class->date);
         $tasks->each(function ($t) {
             $t->course_name = $t->course->name;
-            unset($t->created_at, $t->updated_at, $t->description, $t->start_date, $t->end_date);
+            unset($t->created_at, $t->updated_at, $t->description);
             $t->type = $t->type_task->type;
             unset($t->type_task);
         });

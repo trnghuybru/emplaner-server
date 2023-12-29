@@ -215,8 +215,9 @@ class ScheduleController extends Controller
 
         $semesterId = $request->input('semester_id');
 
-        if ($semesterId == $course->semester_id && $course->semester->school_year->user->id == auth()->id()) {
+        if ($course->semester->school_year->user->id == auth()->id()) {
             $course->update([
+                'semester_id' => $semesterId,
                 'name' => $request->name,
                 'teacher' => $request->teacher,
                 'color_code' => $request->color_code,
