@@ -117,7 +117,6 @@ class TaskController extends Controller
     public function show(Task $task)
     {
         $user = User::find(auth()->id());
-
         if ($user) {
             $taskDetail = Task::whereHas('course.semester.school_year', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
