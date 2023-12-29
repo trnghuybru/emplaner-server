@@ -63,6 +63,8 @@ Route::post('schedules/store_course',[ScheduleController::class,'store_course'])
 
 Route::post('schedules/store_semester',[ScheduleController::class,'store_semester']);
 
+Route::get('/schedules/{id}',[ScheduleController::class,'show']);
+
 Route::put('/schedules/update_course/{id}', [ScheduleController::class, 'update_course']);
 
 Route::delete('schedules/destroy_course/{id}',[ScheduleController::class,'destroy_course']);
