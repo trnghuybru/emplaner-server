@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\ScheduleController;
+use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\TaskController;
 use App\Models\Schedule;
 use Illuminate\Http\Request;
@@ -98,6 +99,11 @@ Route::delete('/calendars/delete_tasks',[CalendarController::class,'delete_tasks
 //upload file
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/update-avatar', [UserController::class, 'updateAvatar']);
+    Route::post('/update-profile', [UserController::class, 'updateProfile']);
     Route::Delete('/delete-avatar', [UserController::class, 'deleteAvatar']);
 
 });
+// Route::middleware('auth:sanctum')->group(function () {
+//     Route::post('/update-profile', [SettingController::class, 'updateProfile']);
+
+// });
