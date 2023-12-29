@@ -117,7 +117,6 @@ class TaskController extends Controller
     public function show(Task $task)
     {
         $user = User::find(auth()->id());
-
         if ($user) {
             $taskDetail = Task::whereHas('course.semester.school_year', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
@@ -126,12 +125,12 @@ class TaskController extends Controller
             $type_task = $taskDetail->type_task;
 
             $taskDetail->type = $type_task->type;
-
+            $taskDetail->course_name = $task->course->name;
+                $taskDetail->color_code = $task->course->color_code;
             if ($type_task->exam_id != null){
                 $taskDetail->exam_id = $type_task->exam_id;
                 $taskDetail->exam_name = $type_task->exam->name;
-                $taskDetail->course_name = $task->course->name;
-                $taskDetail->color_code = $task->course->color_code;
+                
                 unset($task->course);
                 unset($type_task->exam);
             }
@@ -292,6 +291,11 @@ class TaskController extends Controller
                     }
                 }
             }
+
+            $courses->each(function ($course){
+                $course->school_year = $course->semester->school_year;
+                unset($course->semester);
+            });
 
             return response()->json([
                 'status' => 200,
