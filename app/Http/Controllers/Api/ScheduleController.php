@@ -79,15 +79,16 @@ class ScheduleController extends Controller
 
         $days = explode(",", $day_of_week);
 
-
+        
         $resultArray = [];
 
 
         foreach ($days as $day) {
-
             $dateArray = $this->generateWeekdays($day, $startDate, $endDate);
             $resultArray = array_merge($resultArray, $dateArray);
         }
+
+
 
         for ($i = 0; $i < count($resultArray); $i++) {
             SchoolClass::create([
