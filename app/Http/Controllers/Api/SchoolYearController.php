@@ -184,6 +184,55 @@ class SchoolYearController extends Controller
             ], 403);
         }
     }
+    public function destroy(string $schoolYearId) {
+        $user = User::find(auth()->id());
+
+        if ($user) {
+            $schoolYear = SchoolYear::find($schoolYearId);
+
+            if ($schoolYear) {
+                // Xóa tất cả các bản ghi liên quan từ bảng semesters trước
+                $schoolYear->semesters->each(function ($semester) {
+                    $semester->courses->each(function ($course) {
+                        // Xóa tất cả các bản ghi liên quan từ bảng type_tasks trước
+                        $course->tasks->each(function ($task) {
+                            $task->type_task()->delete();
+                            // Xóa tất cả các bản ghi liên quan từ bảng tasks trước
+                            $task->delete();
+                        });
+                        // Xóa tất cả các bản ghi liên quan từ bảng school_classes trước
+                        $course->school_classes()->delete();
+                        // Xóa tất cả các bản ghi liên quan từ bảng exams trước
+                        $course->exams()->delete();
+                        // Xóa tất cả các bản ghi liên quan từ bảng courses trước
+                        $course->delete();
+                    });
+                });
+
+                // Xóa tất cả các khóa ngoại liên quan trong bảng semesters
+                $schoolYear->semesters()->delete();
+
+                // Sau đó xóa school_year
+                $schoolYear->delete();
+
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'School year deleted successfully.'
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => 404,
+                    'message' => 'School year not found.'
+                ], 404);
+            }
+        } else {
+            return response()->json([
+                'status' => 403,
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+    }
+
 
 
 }
