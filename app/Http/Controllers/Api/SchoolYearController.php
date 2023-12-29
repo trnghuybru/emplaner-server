@@ -133,7 +133,7 @@ class SchoolYearController extends Controller
         }
     }
     public function delete_semester(string $semesterId) {
-        $user = User::find(auth()->id());
+        $user = auth()->user();
 
         if ($user) {
             $semester = Semester::find($semesterId);
@@ -184,6 +184,46 @@ class SchoolYearController extends Controller
             ], 403);
         }
     }
+    public function destroy(string $schoolYearId) {
+        $user = auth()->user();
+        if ($user) {
+            $schoolYear = SchoolYear::find($schoolYearId);
+
+            if ($schoolYear) {
+                $schoolYear->semesters->each(function ($semester) {
+                    $semester->courses->each(function ($course) {
+                        $course->tasks->each(function ($task) {
+                            $task->type_task()->delete();
+                            $task->delete();
+                        });
+                        $course->school_classes()->delete();
+                        $course->exams()->delete();
+                        $course->delete();
+                    });
+                });
+
+                $schoolYear->semesters()->delete();
+
+                $schoolYear->delete();
+
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'School year deleted successfully.'
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => 404,
+                    'message' => 'School year not found.'
+                ], 404);
+            }
+        } else {
+            return response()->json([
+                'status' => 403,
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+    }
+
 
 
 }
