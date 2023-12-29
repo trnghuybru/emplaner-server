@@ -76,27 +76,37 @@ class ScheduleController extends Controller
         $endDate = Course::findOrFail($request->course_id)->end_date;
         $day_of_week = $request->day_of_week;
 
-        $dateArray = $this->generateWeekdays($day_of_week,$startDate,$endDate);
-        
+        $days = explode(",", $day_of_week);
 
-        for ($i=0; $i<count($dateArray) ;$i++){
+        
+        $resultArray = [];
+
+        
+        foreach ($days as $day) {
+            
+            $dateArray = $this->generateWeekdays($day, $startDate, $endDate);
+            $resultArray = array_merge($resultArray, $dateArray);
+        }
+
+        for ($i = 0; $i < count($resultArray); $i++) {
             SchoolClass::create([
                 'course_id' => $request->course_id,
                 'room' => $request->room,
-                'date' => $dateArray[$i],
+                'date' => $resultArray[$i],
                 'start_time' => $request->start_time,
                 'end_time' => $request->end_time,
                 'day_of_week' => $request->day_of_week
             ]);
         }
-        
+
         return response()->json([
             'status' => 201,
             'message' => 'Created successfully'
         ]);
     }
 
-    public function get_course_detail(string $id){
+    public function get_course_detail(string $id)
+    {
         $course = Course::findOrFail($id);
         return response()->json([
             "status" => 200,
@@ -132,7 +142,7 @@ class ScheduleController extends Controller
         }
     }
 
-   public function update_course(Request $request, string $id)
+    public function update_course(Request $request, string $id)
     {
         $request->validate([
             'semester_id' => 'integer|required',
@@ -142,18 +152,18 @@ class ScheduleController extends Controller
             'start_date' => 'date_format:Y-m-d|required',
             'end_date' => 'date_format:Y-m-d|required'
         ]);
-    
+
         $course = Course::find($id);
-    
+
         if (!$course) {
             return response()->json([
                 'status' => 404,
                 'message' => 'Course not found'
             ], 404);
         }
-    
+
         $semesterId = $request->input('semester_id');
-    
+
         if ($semesterId == $course->semester_id && $course->semester->school_year->user->id == auth()->id()) {
             $course->update([
                 'name' => $request->name,
@@ -162,7 +172,7 @@ class ScheduleController extends Controller
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date
             ]);
-    
+
             return response()->json([
                 'status' => 200,
                 'message' => 'Updated successfully',
@@ -174,13 +184,13 @@ class ScheduleController extends Controller
             ], 403);
         }
     }
-    
+
     public function destroy_course(string $id)
     {
         $course = Course::find($id);
 
         $tasks = $course->tasks;
-        foreach ($tasks as $task){
+        foreach ($tasks as $task) {
             if ($task->type_task) {
                 $task->type_task->delete();
             }
@@ -188,21 +198,21 @@ class ScheduleController extends Controller
         }
 
         $exams = $course->exams;
-        foreach($exams as $exam){
-            if ($exam->type_task){
+        foreach ($exams as $exam) {
+            if ($exam->type_task) {
                 $exam->type_task->delete();
             }
             $exam->delete();
         }
 
         $classes = $course->school_classes;
-        foreach($classes as $class){
-            if ($class->schedules){
+        foreach ($classes as $class) {
+            if ($class->schedules) {
                 $class->schedules()->delete();
             }
             $class->delete();
         }
-        
+
         if ($course->delete()) {
             return response()->json([
                 "status" => 200,
@@ -228,5 +238,4 @@ class ScheduleController extends Controller
             ], 201);
         }
     }
-    
 }
