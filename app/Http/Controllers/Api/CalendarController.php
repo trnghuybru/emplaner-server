@@ -87,6 +87,14 @@ class CalendarController extends Controller
     public function update(Request $request, string $id)
     {
 
+        $request->validate([
+            'course_id' => 'required|integer',
+            'room' => 'string|required',
+            'date' => 'date',
+            'start_time' => 'date_format:H:i|required',
+            'end_time' => 'date_format:H:i|required'
+        ]);
+
 
         $class = SchoolClass::find($id);
 
@@ -99,13 +107,11 @@ class CalendarController extends Controller
 
         if (auth()->id() === $class->course->semester->school_year->user_id) {
             $class->update([
-                ...$request->validate([
-                    'course_id' => 'required|integer',
-                    'room' => 'string|required',
-                    'date' => 'date',
-                    'start_time' => 'date_format:H:i|required',
-                    'end_time' => 'date_format:H:i|required'
-                ]),
+                'course_id' => $request->course_id,
+                'room' => $request->room,
+                'date' => $request->date,
+                'start_time' => $request->start_time,
+                'end_time' => $request->end_time,
                 'day_of_week' => Carbon::parse($request->date)->format('l')
             ]);
             return response()->json([
@@ -132,7 +138,7 @@ class CalendarController extends Controller
                 });
             });
 
-            $classes->each(function ($class){
+            $classes->each(function ($class) {
                 $class->course_name = $class->course->name;
                 $class->teacher = $class->course->teacher;
                 unset($class->course);
@@ -140,17 +146,18 @@ class CalendarController extends Controller
             return response()->json([
                 'status' => 200,
                 'data' => $classes
-            ],200);
+            ], 200);
         }
     }
 
-    public function delete_tasks(Request $request){
+    public function delete_tasks(Request $request)
+    {
         $request->validate([
             'arrId' => 'array|required'
         ]);
         $arrId = $request->arrId;
-       
-        for($i=0;$i<count($arrId);$i++){
+
+        for ($i = 0; $i < count($arrId); $i++) {
             $task = Task::find($arrId[$i]);
             $task->type_task->delete();
             $task->delete();
@@ -160,6 +167,4 @@ class CalendarController extends Controller
             'message' => "Delete successfully"
         ]);
     }
-
-    
 }
