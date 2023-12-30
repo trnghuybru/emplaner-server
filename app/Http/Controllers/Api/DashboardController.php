@@ -81,13 +81,23 @@ class DashboardController extends Controller
 
         $user = User::findOrFail($user_id);
 
-        $classes = $user->school_years->flatMap(function ($schoolYear) {
-            return $schoolYear->semesters->flatMap(function ($semester) {
-                return $semester->courses->flatMap(function ($course) {
-                    return $course->school_classes;
-                });
-            });
-        });
+        // $classes = $user->school_years->flatMap(function ($schoolYear) {
+        //     return $schoolYear->semesters->flatMap(function ($semester) {
+        //         return $semester->courses->flatMap(function ($course) {
+        //             return $course->school_classes;
+        //         });
+        //     });
+        // });
+        // $classes = SchoolClass::whereHas('course', function ($query) use ($user) {
+        //     $query->whereHas('semester', function ($query) use($user) {
+        //         $query->whereHas('school_year', function ($query) use ($user) {
+        //             $query->where('user_id', $user->id);
+        //         });
+        //     });
+        // })->where('date','=',$today)->get();
+        
+        $classes = SchoolClass::userClasses($user, $today)->get();
+        $classes_tomorrow = SchoolClass::userClasses($user, $tomorrow)->get();
 
         $classes->each(function ($class) {
             $class->course_name = $class->course->name;
@@ -101,16 +111,21 @@ class DashboardController extends Controller
             return $class->toArray();
         });
 
-        $classes_today = $classes->where('date', '=', $today);
-        $classes_tomorrow = $classes->where('date', '=', $tomorrow);
-        //..................................................
-        $exams = $user->school_years->flatMap(function ($schoolYear) {
-            return $schoolYear->semesters->flatMap(function ($semester) {
-                return $semester->courses->flatMap(function ($course) {
-                    return $course->exams;
-                });
-            });
+        $classes_tomorrow->each(function ($class) {
+            $class->course_name = $class->course->name;
+            $class->teacher = $class->course->teacher;
+            unset(
+                $class->created_at,
+                $class->updated_at,
+                $class->end_time
+            );
+            unset($class->course);
+            return $class->toArray();
         });
+
+        //..................................................
+        $exams = Exam::userExams($user,$today);
+        $exams_tomorrow = Exam::userExams($user,$tomorrow);
 
         $exams->each(function ($ex) {
             $ex->course_name = $ex->course->name;
@@ -120,21 +135,27 @@ class DashboardController extends Controller
             return $ex->toArray();
         });
 
-        $exams_today = $exams->where('start_date', '=', $today);
-        $exams_tomorrow = $exams->where('start_date', '=', $tomorrow);
-        //----------------------------------
+        $exams_tomorrow->each(function ($ex) {
+            $ex->course_name = $ex->course->name;
+            $ex->teacher = $ex->course->teacher;
+            unset($ex->created_at, $ex->updated_at);
+            unset($ex->course);
+            return $ex->toArray();
+        });
+
+        
 
 
         return response()->json([
             "status" => 200,
             "data" => [
                 "today" => [
-                    "class" => $classes_today->values()->all(),
-                    "exam" => $exams_today->values()->all()
+                    "class" => $classes,
+                    "exam" => $exams
                 ],
                 "tomorrow" => [
-                    "class" => $classes_tomorrow->values()->all(),
-                    "exam" => $exams_tomorrow->values()->all()
+                    "class" => $classes_tomorrow,
+                    "exam" => $exams_tomorrow
                 ]
             ]
         ], 200);

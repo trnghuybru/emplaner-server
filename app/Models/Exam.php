@@ -31,4 +31,15 @@ class Exam extends Model
     {
         return $this->hasOne(TypeTask::class);
     }
+
+    public function scopeUserExams($query, $user, $date)
+    {
+        return $query->whereHas('course', function ($query) use ($user) {
+            $query->whereHas('semester', function ($query) use ($user) {
+                $query->whereHas('school_year', function ($query) use ($user) {
+                    $query->where('user_id', $user->id);
+                });
+            });
+        })->where('start_date', '=', $date);
+    }
 }

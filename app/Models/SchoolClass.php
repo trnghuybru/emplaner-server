@@ -24,4 +24,15 @@ class SchoolClass extends Model
     {
         return $this->belongsTo(Course::class);
     }
+
+    public function scopeUserClasses($query, $user, $date)
+    {
+        return $query->whereHas('course', function ($query) use ($user) {
+            $query->whereHas('semester', function ($query) use ($user) {
+                $query->whereHas('school_year', function ($query) use ($user) {
+                    $query->where('user_id', $user->id);
+                });
+            });
+        })->where('date', '=', $date);
+    }
 }
