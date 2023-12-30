@@ -80,21 +80,6 @@ class DashboardController extends Controller
         $tomorrow = now()->addDay()->toDateString();
 
         $user = User::findOrFail($user_id);
-
-        // $classes = $user->school_years->flatMap(function ($schoolYear) {
-        //     return $schoolYear->semesters->flatMap(function ($semester) {
-        //         return $semester->courses->flatMap(function ($course) {
-        //             return $course->school_classes;
-        //         });
-        //     });
-        // });
-        // $classes = SchoolClass::whereHas('course', function ($query) use ($user) {
-        //     $query->whereHas('semester', function ($query) use($user) {
-        //         $query->whereHas('school_year', function ($query) use ($user) {
-        //             $query->where('user_id', $user->id);
-        //         });
-        //     });
-        // })->where('date','=',$today)->get();
         
         $classes = SchoolClass::userClasses($user, $today)->get();
         $classes_tomorrow = SchoolClass::userClasses($user, $tomorrow)->get();

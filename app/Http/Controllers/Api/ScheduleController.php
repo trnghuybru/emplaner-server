@@ -68,42 +68,64 @@ class ScheduleController extends Controller
         $request->validate([
             'course_id' => 'required|integer',
             'room' => 'string|required',
+            'date' => 'date_format:Y-m-d|nullable',
             'start_time' => 'date_format:H:i|required',
             'end_time' => 'date_format:H:i|required',
-            'day_of_week' => 'string|required'
+            'day_of_week' => 'string|nullable'
         ]);
 
-        $startDate = Course::findOrFail($request->course_id)->start_date;
-        $endDate = Course::findOrFail($request->course_id)->end_date;
-        $day_of_week = $request->day_of_week;
+        if ($request->day_of_week != null &&$request->date==null) {
+            $startDate = Course::findOrFail($request->course_id)->start_date;
+            $endDate = Course::findOrFail($request->course_id)->end_date;
+            $day_of_week = $request->day_of_week;
 
-        $days = explode(",", $day_of_week);
-
-        
-        $resultArray = [];
+            $days = explode(",", $day_of_week);
 
 
-        foreach ($days as $day) {
-            $dateArray = $this->generateWeekdays($day, $startDate, $endDate);
-            $resultArray = array_merge($resultArray, $dateArray);
-        }
+            $resultArray = [];
+
+
+            foreach ($days as $day) {
+                $dateArray = $this->generateWeekdays($day, $startDate, $endDate);
+                $resultArray = array_merge($resultArray, $dateArray);
+            }
 
 
 
-        for ($i = 0; $i < count($resultArray); $i++) {
-            SchoolClass::create([
+            for ($i = 0; $i < count($resultArray); $i++) {
+                SchoolClass::create([
+                    'course_id' => $request->course_id,
+                    'room' => $request->room,
+                    'date' => $resultArray[$i],
+                    'start_time' => $request->start_time,
+                    'end_time' => $request->end_time,
+                    'day_of_week' => $request->day_of_week
+                ]);
+            }
+
+            return response()->json([
+                'status' => 201,
+                'message' => 'Created successfully'
+            ]);
+        }elseif($request->day_of_week==null && $request->date != null){
+            if (SchoolClass::create([
                 'course_id' => $request->course_id,
                 'room' => $request->room,
-                'date' => $resultArray[$i],
+                'date' => $request->date,
                 'start_time' => $request->start_time,
                 'end_time' => $request->end_time,
                 'day_of_week' => $request->day_of_week
-            ]);
+            ])){
+                return response()->json([
+                    'status' => 201,
+                    'message' => 'Created successfully'
+                ]);
+            }
         }
 
         return response()->json([
-            'status' => 201,
-            'message' => 'Created successfully'
+            'status' => 400,
+            'message' => 'Created fail'
         ]);
     }
 
@@ -290,6 +312,4 @@ class ScheduleController extends Controller
             ], 201);
         }
     }
-
-    
 }
