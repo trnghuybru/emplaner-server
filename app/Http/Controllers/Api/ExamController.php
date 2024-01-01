@@ -6,9 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ExamResource;
 use App\Http\Traits\CanLoadRelationships;
 use App\Models\Exam;
+use App\Models\Task;
+use App\Models\TypeTask;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Mockery\Matcher\Type;
 
 class ExamController extends Controller
 {
@@ -51,37 +54,35 @@ class ExamController extends Controller
             ], 404);
         }
 
-        $userId = DB::table('exams_view')
-            ->select('user_id')
-            ->where('id', '=', $exam->id)
-            ->first()
-            ->user_id;
+        $user = User::find(auth()->id());
+    
+        if ($exam->course->semester->school_year->user_id == $user->id) {
+            $examDetail = $exam->load(['course.semester.school_year']);
 
-        if ($userId === auth()->id()) {
-            $examDetail = DB::table('exams_view')->select([
-                'id',
-                'name',
-                'start_date',
-                'start_time',
-                'duration',
-                'room',
-                'course_id',
-                'course_name',
-                'color_code',
-                'semesters_id',
-                'semester_name',
-                'semester_start_date',
-                'semester_end_date',
-                'school_years_id',
-                'school_years_start_date',
-                'school_years_end_date',
-                'user_id'
-            ])->where('id', '=', $exam->id)
-                ->first();
-
+            $typeTasks = TypeTask::where('exam_id','=',$exam->id)->get();
+            
+            $tasks = $typeTasks->map(function ($typeTask) {
+                $task = Task::find($typeTask->task_id);
+                if ($task) {
+                    return [
+                        'id' => $task->id,
+                        'course_id' => $task->course_id,
+                        'name' => $task->name,
+                        'type' => $task->type_task->type,
+                        'course_name' => $task->course->name,
+                        'color_code' => $task->course->color_code,
+                        'status' => $task->status
+                    ];
+                }
+                return null; 
+            })->filter();
+            
             return response()->json([
                 'status' => 200,
-                'data' => $examDetail
+                'data' => [
+                    'exam' => $examDetail,
+                    'tasks' => $tasks
+                ]
             ]);
         } else {
             return response()->json([
