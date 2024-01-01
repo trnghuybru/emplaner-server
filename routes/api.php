@@ -99,7 +99,7 @@ Route::delete('/calendars/delete_tasks',[CalendarController::class,'delete_tasks
 //upload file
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/update-avatar', [UserController::class, 'updateAvatar']);
-    Route::post('/update-profile', [UserController::class, 'updateProfile']);
+    Route::POST('/update-profile', [UserController::class, 'updateProfile']);
     Route::Delete('/delete-avatar', [UserController::class, 'deleteAvatar']);
 
 });
