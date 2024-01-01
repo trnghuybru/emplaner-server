@@ -109,9 +109,9 @@ class DashboardController extends Controller
         });
 
         //..................................................
-        $exams = Exam::userExams($user,$today);
-        $exams_tomorrow = Exam::userExams($user,$tomorrow);
-
+        $exams = Exam::userExams($user,$today)->get();
+        $exams_tomorrow = Exam::userExams($user,$tomorrow)->get();
+        
         $exams->each(function ($ex) {
             $ex->course_name = $ex->course->name;
             $ex->teacher = $ex->course->teacher;

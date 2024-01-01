@@ -119,7 +119,7 @@ class ExamController extends Controller
 
             return response()->json([
                 'status' => 201,
-                'data' => new ExamResource($exam)
+                'data' => $exam
             ]);
         } else {
             return response()->json([

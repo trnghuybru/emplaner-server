@@ -33,13 +33,17 @@ class Exam extends Model
     }
 
     public function scopeUserExams($query, $user, $date)
-    {
-        return $query->whereHas('course', function ($query) use ($user) {
-            $query->whereHas('semester', function ($query) use ($user) {
-                $query->whereHas('school_year', function ($query) use ($user) {
-                    $query->where('user_id', $user->id);
+{
+    return $query->whereHas('course', function ($query) use ($user) {
+        $query->whereHas('semester', function ($query) use ($user) {
+            $query->whereHas('school_year', function ($query) use ($user) {
+                $query->whereHas('user', function ($query) use ($user) {
+                    $query->where('id', $user->id);
                 });
             });
-        })->where('start_date', '=', $date);
-    }
+        });
+    })->where('start_date','=', $date);
 }
+
+}
+
