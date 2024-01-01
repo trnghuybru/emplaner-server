@@ -157,7 +157,7 @@ public function updateProfile(Request $request)
                         ],
         ]);
 
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
         // Return JSON response for any exception
         return response()->json([
             'status' => 500,
