@@ -69,6 +69,7 @@ class ExamController extends Controller
                         'course_id' => $task->course_id,
                         'name' => $task->name,
                         'type' => $task->type_task->type,
+                        'end_date' => $task->end_date,
                         'course_name' => $task->course->name,
                         'color_code' => $task->course->color_code,
                         'status' => $task->status
