@@ -8,12 +8,13 @@ use App\Models\User;
 use Exception;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Resources\UserResource;
 
 class UserController extends Controller
 {
+    
     public function updateAvatar(Request $request)
     {
         $request->validate([
