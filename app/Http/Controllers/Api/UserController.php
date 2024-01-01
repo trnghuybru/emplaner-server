@@ -148,11 +148,14 @@ public function updateProfile(Request $request)
 
         // Lưu các thay đổi
         $user->save();
-
         return response()->json([
             'status' => 200,
-            'data' => new UserResource($user),
+            'data' => [
+                'user' => new UserResource($user),
+                'avatar' => asset("storage/{$user->avatar}"), 
+                        ],
         ]);
+
     } catch (\Exception $e) {
         // Return JSON response for any exception
         return response()->json([
@@ -202,59 +205,59 @@ public function updateProfile(Request $request)
 //     }
 // }
 
-public function updateProfile1(PostStoreRequest $request)
-{
-    try {
-        $user = Auth::user();
+// public function updateProfile1(PostStoreRequest $request)
+// {
+//     try {
+//         $user = Auth::user();
 
-        // Check if the request has the 'image' file
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
+//         // Check if the request has the 'image' file
+//         if ($request->hasFile('image')) {
+//             $image = $request->file('image');
 
-            // Generate a unique filename
-            $imageName = Str::random(32) . "." . $image->getClientOriginalExtension();
+//             // Generate a unique filename
+//             $imageName = Str::random(32) . "." . $image->getClientOriginalExtension();
 
-            // Delete the old image if it exists
-            if ($user->avatar) {
-                Storage::disk('public')->delete($user->avatar);
-            }
+//             // Delete the old image if it exists
+//             if ($user->avatar) {
+//                 Storage::disk('public')->delete($user->avatar);
+//             }
 
-            // Save the image in the storage folder
-            $isSaved = Storage::disk('public')->put($imageName, file_get_contents($image->getRealPath()));
+//             // Save the image in the storage folder
+//             $isSaved = Storage::disk('public')->put($imageName, file_get_contents($image->getRealPath()));
 
-            // Check if the image was saved successfully
-            if ($isSaved) {
-                // Update user profile
-                $user->update([
-                    'name' => $request->name,
-                    'job' => $request->job,
-                    'avatar' => $imageName
-                ]);
+//             // Check if the image was saved successfully
+//             if ($isSaved) {
+//                 // Update user profile
+//                 $user->update([
+//                     'name' => $request->name,
+//                     'job' => $request->job,
+//                     'avatar' => $imageName
+//                 ]);
 
-                // Return JSON response
-                return response()->json([
-                    'message' => 'Profile updated successfully',
-                    'avatar_url' => asset("storage/{$imageName}")
-                ], 200);
-            } else {
-                // Return JSON response if the image couldn't be saved
-                return response()->json([
-                    'message' => 'Failed to save the image',
-                ], 500);
-            }
-        } else {
-            // Return JSON response if no 'image' in the request
-            return response()->json([
-                'message' => 'No image file provided',
-            ], 400);
-        }
-    } catch (\Exception $e) {
-        // Return JSON response for any exception
-        return response()->json([
-            'message' => 'Something went really wrong',
-            'error' => $e->getMessage(), // Add the error message for debugging
-        ], 500);
-    }
-}
+//                 // Return JSON response
+//                 return response()->json([
+//                     'message' => 'Profile updated successfully',
+//                     'avatar_url' => asset("storage/{$imageName}")
+//                 ], 200);
+//             } else {
+//                 // Return JSON response if the image couldn't be saved
+//                 return response()->json([
+//                     'message' => 'Failed to save the image',
+//                 ], 500);
+//             }
+//         } else {
+//             // Return JSON response if no 'image' in the request
+//             return response()->json([
+//                 'message' => 'No image file provided',
+//             ], 400);
+//         }
+//     } catch (\Exception $e) {
+//         // Return JSON response for any exception
+//         return response()->json([
+//             'message' => 'Something went really wrong',
+//             'error' => $e->getMessage(), // Add the error message for debugging
+//         ], 500);
+//     }
+// }
 
 }
