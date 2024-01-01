@@ -43,53 +43,53 @@ class ExamController extends Controller
 
 
     public function show(Exam $exam)
-{
-    if (!$exam) {
-        return response()->json([
-            'status' => 404,
-            'message' => 'Exam not found'
-        ], 404);
+    {
+        if (!$exam) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Exam not found'
+            ], 404);
+        }
+
+        $userId = DB::table('exams_view')
+            ->select('user_id')
+            ->where('id', '=', $exam->id)
+            ->first()
+            ->user_id;
+
+        if ($userId === auth()->id()) {
+            $examDetail = DB::table('exams_view')->select([
+                'id',
+                'name',
+                'start_date',
+                'start_time',
+                'duration',
+                'room',
+                'course_id',
+                'course_name',
+                'color_code',
+                'semesters_id',
+                'semester_name',
+                'semester_start_date',
+                'semester_end_date',
+                'school_years_id',
+                'school_years_start_date',
+                'school_years_end_date',
+                'user_id'
+            ])->where('id', '=', $exam->id)
+                ->first();
+
+            return response()->json([
+                'status' => 200,
+                'data' => $examDetail
+            ]);
+        } else {
+            return response()->json([
+                'status' => 403,
+                'message' => 'Unauthorized'
+            ], 403);
+        }
     }
-
-    $userId = DB::table('exams_view')
-        ->select('user_id')
-        ->where('id', '=', $exam->id)
-        ->first()
-        ->user_id;
-
-    if ($userId === auth()->id()) {
-        $examDetail = DB::table('exams_view')->select([
-            'id',
-            'name',
-            'start_date',
-            'start_time',
-            'duration',
-            'room',
-            'course_id',
-            'course_name',
-            'color_code',
-            'semesters_id',
-            'semester_name',
-            'semester_start_date',
-            'semester_end_date',
-            'school_years_id',
-            'school_years_start_date',
-            'school_years_end_date',
-            'user_id'
-        ])->where('id', '=', $exam->id)
-            ->first();
-
-        return response()->json([
-            'status' => 200,
-            'data' => $examDetail
-        ]);
-    } else {
-        return response()->json([
-            'status' => 403,
-            'message' => 'Unauthorized'
-        ], 403);
-    }
-}
 
 
     public function store(Request $request)
@@ -148,7 +148,7 @@ class ExamController extends Controller
 
         if ($userId === auth()->id()) {
             $exam->update([
-                'course_id'=> $request->course_id,
+                'course_id' => $request->course_id,
                 'name' => $request->input('name', $exam->name),
                 'start_date' => $request->input('start_date', $exam->start_date),
                 'start_time' => $request->input('start_time', $exam->start_time),
@@ -177,7 +177,7 @@ class ExamController extends Controller
             ->user_id;
 
         if ($userId === auth()->id()) {
-            
+
             if ($exam->type_task !== null && $exam->type_task->exam_id !== null) {
                 $exam->type_task->update(['exam_id' => null]);
             }

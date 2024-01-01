@@ -46,7 +46,7 @@ class CalendarController extends Controller
                 'status' => 200,
                 'data' => [
                     'class' => $class,
-                    'tasks' => $tasks
+                    'tasks' => $tasks->values()->toArray()
                 ]
             ]);
         }
