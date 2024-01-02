@@ -255,7 +255,6 @@ class TaskController extends Controller
         $semesterId = $request->query('semester-id');
 
         $user = User::find(auth()->id());
-
         if ($user) {
             if ($schoolYearId == null && $semesterId == null) {
                 $schoolYears = $user->school_years;
@@ -271,7 +270,20 @@ class TaskController extends Controller
                         $courses = $courses->merge($semester->courses);
                     }
                 }
-            }else if($schoolYearId==null) {
+            }
+            else if ($schoolYearId != null) {
+                $schoolYear = SchoolYear::find($schoolYearId);
+                
+                if($schoolYear){
+                    $courses = collect();
+                    $semesters = $schoolYear->semesters;
+                    foreach($semesters as $semester){
+                        
+                        $courses = $courses->merge($semester->courses);
+                    }
+                }
+            }
+            else if($schoolYearId==null) {
                 $semester = Semester::find($semesterId);
                 if ($semester){
                     $courses = $semester->courses;
@@ -280,15 +292,6 @@ class TaskController extends Controller
                         'status' => 400,
                         'message' => "Not founded"
                     ], 400);
-                }
-            }else {
-                $schoolYear = SchoolYear::find($schoolYearId);
-                if($schoolYear){
-                    $courses = collect();
-                    $semesters = $schoolYear->semesters;
-                    foreach($semesters as $semester){
-                        $courses = $courses->merge($semester->course);
-                    }
                 }
             }
 
