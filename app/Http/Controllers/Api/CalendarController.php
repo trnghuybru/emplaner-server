@@ -141,6 +141,7 @@ class CalendarController extends Controller
             $classes->each(function ($class) {
                 $class->course_name = $class->course->name;
                 $class->teacher = $class->course->teacher;
+                $class->color_code = $class->course->color_code;
                 unset($class->course);
             });
             return response()->json([
